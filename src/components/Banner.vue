@@ -1,10 +1,8 @@
 <template lang="pug">
-  v-layout.banner--wrapper(row wrap)
-    v-flex.text-xs-center(xs12 md4)
+  v-layout(row wrap).text-xs-center(:style='bannerStyles')
+    v-flex(xs12)
       p.title {{ bannerText.heading }}
-      p.body2 {{ bannerText.subheading }}
-    v-flex(xs12 md8)
-      div.banner(:style='bannerStyles')
+      p.subheading {{ bannerText.subheading }}
 </template>
 
 <script>
@@ -23,11 +21,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .banner--wrapper {
-    // margin-top: 49px;
-    // @media screen and (min-width: 960px) {
-    //   margin-top: 57px;
-    // }
+    .title {
+      margin-top: 2.0rem;
+      margin-bottom: 4.0rem;
+    }
+
+    .title, .subheading {
+      color: #fff;
+    }
     .banner {
       display: flex;
       width: 100%;
@@ -60,5 +61,4 @@ export default {
       //   }
       // }
     }
-  }
 </style>
