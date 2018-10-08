@@ -1,9 +1,9 @@
 <template lang="pug">
   div
     app-banner(:bannerStyles="bannerStyles" :bannerText="bannerText")
-    v-layout(row wrap)
-      app-services
-      app-news
+    //- v-layout(row wrap)
+    app-services
+      //- app-news
 </template>
 
 <script>

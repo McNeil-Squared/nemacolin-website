@@ -1,10 +1,8 @@
 <template lang="pug">
-  v-flex(xs12 md9)
-    v-layout(row wrap)
-      v-flex(xs12 text-xs-center)
-        p.subheading Services
+  div
+    p.title.text-xs-center.mt-2 Services
     v-layout.services--container(row wrap)
-      router-link.flex.service.xs12.md4(v-for="service in services" index="service.name" tag="div" :to="service.to")
+      router-link.flex.service.xs12.md2(v-for="service in services" index="service.name" tag="div" :to="service.to")
         v-icon.mr-5(color="white") {{ service.icon }}
         p {{ service.name }}
 </template>
@@ -28,10 +26,10 @@ export default {
 
 <style lang="scss" scoped>
   .services--container {
+    justify-content: center;
     .service {
       background-color: #0354ce;
       margin: 0.25rem;
-      flex-basis: 32.5%;
       padding: 0.5rem;
       display: flex;
       align-items: center;
