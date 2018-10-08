@@ -7,12 +7,12 @@
     v-toolbar-title Nemacolin Inc.
     v-spacer
     v-toolbar-items
-      v-btn(flat) Services
-      v-btn(flat) New Residents
-      v-btn(flat) Documents
-      v-btn(flat) FAQ&rsquo;s
-      v-btn(flat) Contact
-      v-btn(flat) Login
+      v-btn(color='primary' flat) Services
+      v-btn(color='primary' flat) New Residents
+      v-btn(color='primary' flat) Documents
+      v-btn(color='primary' flat) FAQ&rsquo;s
+      v-btn(color='primary' flat) Contact
+      v-btn(color='primary' flat) Login
 </template>
 
 <script>
