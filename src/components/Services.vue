@@ -16,7 +16,7 @@ export default {
         { name: 'Nemacolin Park', icon: 'fas fa-tree', to: '/park' },
         { name: 'Trash Service', icon: 'fas fa-trash', to: '/trash' },
         { name: 'Street Lights', icon: 'fas fa-lightbulb', to: '/lights' },
-        { name: 'Fire Hydrants', icon: 'fas fa-fire', to: '/hydrants' },
+        { name: 'Fire Hydrants', icon: 'fas fa-fire', to: '/hydrants' }
       ]
     }
   }
