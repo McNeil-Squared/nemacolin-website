@@ -11,6 +11,9 @@ import {
   VIcon,
   VGrid,
   VToolbar,
+  VCard,
+  VSubheader,
+  VDivider,
   transitions
 } from 'vuetify'
 import 'vuetify/src/stylus/app.styl'
@@ -27,6 +30,9 @@ Vue.use(Vuetify, {
     VIcon,
     VGrid,
     VToolbar,
+    VCard,
+    VSubheader,
+    VDivider,
     transitions
   },
   theme: {

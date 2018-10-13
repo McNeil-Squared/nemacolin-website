@@ -1,6 +1,6 @@
 <template lang="pug">
   div
-    p.title.text-xs-center.mt-4.secondary--text Services
+    p.title.text-xs-center.mt-4.primary--text Services
     v-layout.services--container(row wrap)
       router-link.flex.service.xs12.md2(v-for="service in services" index="service.name" tag="div" :to="service.to")
         v-icon.mr-5(color="white") {{ service.icon }}

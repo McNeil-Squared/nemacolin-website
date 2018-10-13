@@ -1,14 +1,17 @@
 <template lang="pug">
   div
     app-banner(:bannerStyles="bannerStyles" :bannerText="bannerText")
-    //- v-layout(row wrap)
     app-services
-      //- app-news
+    v-container(fluid)
+      v-layout.mt-4(row wrap justify-center)
+        app-about
+        app-news
 </template>
 
 <script>
 import Banner from '../components/Banner'
 import Services from '../components/Services'
+import About from '../components/About'
 import News from '../components/News'
 export default {
   data () {
@@ -20,14 +23,15 @@ export default {
       },
       bannerText: {
         heading: 'Welcome to Nemacolin!',
-        subheading: 'The is the website for Nemacolin Incorporated, the municipal authority for Nemacolin Village.'
+        subheading: 'This is the website for Nemacolin Incorporated, the municipal authority for Nemacolin Village.'
       }
     }
   },
   components: {
     appBanner: Banner,
     appServices: Services,
-    appNews: News,
+    appAbout: About,
+    appNews: News
   }
 }
 </script>
