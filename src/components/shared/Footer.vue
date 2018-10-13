@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-footer(app color='primary')
+  v-footer(app color='primary' height='48')
     p &copy;2018 Nemacolin Inc
 </template>
 
