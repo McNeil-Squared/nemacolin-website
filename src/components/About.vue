@@ -3,34 +3,10 @@
     v-card.mr-2.v-card--modifications
       v-card-title(primary-title)
         h3.headline.mx-auto.primary--text About Us
-      p.px-4.mt-4 Nemacolin Inc provides sewer service, trash service, maintenance for the park and ballfield, pays for electricity and maintenance for the street lights, and pays for maintenance for the fire hydrants.&nbsp;&nbsp;Nemacolin Inc changes a flat fee per house, &#36;40 for occupied homes and &#36;15 for unoccupied homes, to provide funding for the services that they provide.
-      p.px-4 Nemacolin Inc was originally founded in 19xx by the Buckeye Coal company.&nbsp;&nbsp;Nemacolin Inc became a private entity in 19xx when the mine closed.
-      p.px-4.text-xs-center.title.accent--text Nemacolin Inc Board
-      table.mx-auto.text-xs-center
-        tr
-          th Name
-          th Title
-        tr
-          td Angie Visnesky
-          td President
-        tr
-          td Drew Cubic, Jr
-          td Vice President
-        tr
-          td Wanda Cutright
-          td Secretary
-        tr
-          td Eric Teagarden
-          td Member
-        tr
-          td Rick Sokal
-          td Member
-        tr
-          td William
-          td Member
-        tr
-          td Ed Helman
-          td Member
+      p.px-4.mt-4 We are a non-profit corporation established in 1946.&nbsp;&nbsp;Every homeowner in the village of Nemacolin is a stakeholder in the corporation.&nbsp;&nbsp;We are governed by an executive board of seven members, elected by the community.
+      p.px-4 We maintain the sewage service, garbage service, streetlights, fire hydrant maintenance, and community property of the village.
+      p.px-4 Our regular meetings are held the first Monday of the month at 6:30 pm at the Nemacolin UMWA Union Hall.&nbsp;&nbsp;Town meetings are held quarterly, in March, June, September, and December at 7:00 pm at the Nemacolin UMWA Union Hall.
+      p.px-4 Please feel free to explore our site to see what we do for our community!
 </template>
 
 <style lang="scss" scoped>

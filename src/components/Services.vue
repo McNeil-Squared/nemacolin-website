@@ -13,10 +13,10 @@ export default {
     return {
       services: [
         { name: 'Sewage Service', icon: 'fas fa-clipboard-list', to: '/sewage' },
-        { name: 'Nemacolin Park', icon: 'fas fa-tree', to: '/park' },
         { name: 'Trash Service', icon: 'fas fa-trash', to: '/trash' },
-        { name: 'Street Lights', icon: 'fas fa-lightbulb', to: '/lights' },
-        { name: 'Fire Hydrants', icon: 'fas fa-fire', to: '/hydrants' }
+        { name: 'Nemacolin Park', icon: 'fas fa-tree', to: '/park' },
+        { name: 'New Residents', icon: 'fas fa-truck-moving', to: '/newresidents' },
+        { name: 'FAQ\u2019s', icon: 'fas fa-question-circle', to: '/faqs' }
       ]
     }
   }

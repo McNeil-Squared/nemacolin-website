@@ -24,8 +24,8 @@ export default {
     return {
       dropdownMenuItems: [
         { name: 'Sewage Service', to: '/sewage' },
-        { name: 'Nemacolin Park', to: '/park' },
         { name: 'Trash Service', to: '/trash' },
+        { name: 'Nemacolin Park', to: '/park' },
         { name: 'Street Lights', to: '/lights' },
         { name: 'Fire Hydrants', to: '/hydrants' }
       ],
