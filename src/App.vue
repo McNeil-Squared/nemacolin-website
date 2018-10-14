@@ -4,7 +4,8 @@
     app-Navdrawer
     v-content
       v-container(fluid)
-        router-view
+        v-fade-transition
+          router-view
     app-footer
 </template>
 
@@ -23,5 +24,5 @@ export default {
 
 <style lang="scss">
   html { overflow-y: auto; }
-  // .container { padding-top: 0; }
+  img { max-width: 100%; }
 </style>

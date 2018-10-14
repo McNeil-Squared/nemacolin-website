@@ -17,6 +17,12 @@ export default new Router({
       name: 'sewage',
       component: () => import('./views/Sewage.vue'),
       meta: { title: 'Sewage Service' }
+    },
+    {
+      path: '/trash',
+      name: 'trash',
+      component: () => import('./views/Trash.vue'),
+      meta: { title: 'Trash Service' }
     }
   ]
 })
