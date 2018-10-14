@@ -9,8 +9,17 @@
         v-list-tile-avatar
           v-icon(color='primary') fas fa-chalkboard-teacher
         v-list-tile-content 
-          v-list-tile-title Quarterly Town Meeting
-          v-list-tile-sub-title UMWA Union Hall - 7:00PM
-          v-list-tile-sub-title This is a board meeting for Nemacolin Inc which is also a town meeting.&nbsp;&nbsp;All citizens are invited.
+          v-list-tile-title Monthly Board Meeting
+          v-list-tile-sub-title UMWA Union Hall - 6:30PM
+            br 
+            | This is a monthly board meeting for Nemacolin Inc.&nbsp;&nbsp;Board meetings are open to the public.
       v-divider
 </template>
+
+<style lang="scss">
+  .v-list__tile {
+    @media screen and (max-width: 500px) {
+      height: 160px !important;
+    }
+  }
+</style>

@@ -1,6 +1,7 @@
 <template lang="pug">
   v-app
     app-header
+    app-Navdrawer
     v-content
       v-container(fluid)
         router-view
@@ -9,11 +10,13 @@
 
 <script>
 import Header from './components/shared/Header'
+import Navdrawer from './components/shared/Navdrawer'
 import Footer from './components/shared/Footer'
 export default {
   components: {
     appHeader: Header,
-    appFooter: Footer
+    appFooter: Footer,
+    appNavdrawer: Navdrawer
   }
 }
 </script>

@@ -1,8 +1,8 @@
 <template lang="pug">
-  v-layout(row wrap).text-xs-center(:style='bannerStyles')
+  v-layout.text-xs-center(row wrap :style='bannerStyles')
     v-flex(xs12)
       p.title {{ bannerText.heading }}
-      p.subheading {{ bannerText.subheading }}
+      p.subheading.px-2 {{ bannerText.subheading }}
 </template>
 
 <script>
