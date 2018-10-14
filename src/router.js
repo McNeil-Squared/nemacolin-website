@@ -23,6 +23,12 @@ export default new Router({
       name: 'trash',
       component: () => import('./views/Trash.vue'),
       meta: { title: 'Trash Service' }
+    },
+    {
+      path: '/park',
+      name: 'park',
+      component: () => import('./views/Park.vue'),
+      meta: { title: 'Nemacolin Park' }
     }
   ]
 })
