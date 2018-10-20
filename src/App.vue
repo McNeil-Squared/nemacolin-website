@@ -25,4 +25,5 @@ export default {
 <style lang="scss">
   html { overflow-y: auto; }
   img { max-width: 100%; }
+  a { text-decoration: none; }
 </style>
