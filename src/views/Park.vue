@@ -6,7 +6,7 @@
         img(:src="item.img" alt="item.alt")
     v-layout.mb-3(row wrap)
       v-flex(xs12)
-        h2.accent--text The Playground
+        h2.accent--text.pl-3 The Playground
         p.px-3 Nemacolin is the only community in Cumberland Township that owns and operates its own park.&nbsp;&nbsp;We have a number of play areas on the property, as well as our own softball field and basketball court.&nbsp;&nbsp;Residents are welcome in our park from dawn until dusk, 365 days a year.
     v-layout(row wrap)
       v-flex.text-xs-center(xs12 md6 v-for="item in features" :key="item.alt")

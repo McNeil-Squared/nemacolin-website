@@ -3,7 +3,7 @@
     router-link(to='/')
       v-toolbar-side-icon
         v-avatar(size="48")
-          img(:src='src' :alt='alt')
+          img.nemacolin-avatar(:src='src' :alt='alt')
     v-toolbar-title Nemacolin Inc.
     v-spacer
     v-toolbar-items
@@ -25,12 +25,10 @@ export default {
       dropdownMenuItems: [
         { name: 'Sewage Service', to: '/sewage' },
         { name: 'Trash Service', to: '/trash' },
-        { name: 'Nemacolin Park', to: '/park' },
-        { name: 'Street Lights', to: '/lights' },
-        { name: 'Fire Hydrants', to: '/hydrants' }
+        { name: 'Nemacolin Park', to: '/park' }
       ],
       menuItems: [
-        { name: 'New Residents', to: '/newresidents', color: 'primary' },
+        { name: 'Resident Info', to: '/info', color: 'primary' },
         { name: 'FAQ\u2019s', to: '/faqs', color: 'primary' },
         { name: 'Contact', to: '/contact', color: 'primary' },
         { name: 'Login', to: '/login', color: 'accent' }

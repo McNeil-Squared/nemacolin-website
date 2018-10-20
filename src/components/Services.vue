@@ -15,7 +15,7 @@ export default {
         { name: 'Sewage Service', icon: 'fas fa-clipboard-list', to: '/sewage' },
         { name: 'Trash Service', icon: 'fas fa-trash', to: '/trash' },
         { name: 'Nemacolin Park', icon: 'fas fa-tree', to: '/park' },
-        { name: 'New Residents', icon: 'fas fa-truck-moving', to: '/newresidents' },
+        { name: 'Resident Info', icon: 'fas fa-home', to: '/info' },
         { name: 'FAQ\u2019s', icon: 'fas fa-question-circle', to: '/faqs' }
       ]
     }
