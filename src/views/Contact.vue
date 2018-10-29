@@ -10,7 +10,7 @@
           v-btn(v-if="status != 'success'" @click="submit" color="primary" :loading="sending" :disabled="sending") Submit
           v-btn(v-if="status != 'success'" @click="clear" color="accent" :disabled="sending") Clear
         v-alert(v-if="status === 'success'" type="success" icon="check_circle" value="true") Success!&nbsp;&nbsp;Your message was received.&nbsp;&nbsp;Someone from Nemacolin Inc will be contacting you shortly.
-        v-alert(v-if="status === 'fail'" type="error" icon="close" value="true") Bummer! There was an error and your message was not received.&nbsp;&nbsp;Please try again.&nbsp;&nbsp;If you see this message repeatedly, please #[a(href="mailto:info@nemacolininc.com") email me] and let us know.
+        v-alert(v-if="status === 'fail'" type="error" icon="close" value="true") Bummer!&nbsp;&nbsp;There was an error and your message was not received.&nbsp;&nbsp;Please try again.&nbsp;&nbsp;If you see this message repeatedly, please #[a(href="mailto:info@nemacolininc.com") email me] and let us know.
 </template>
 
 <script>

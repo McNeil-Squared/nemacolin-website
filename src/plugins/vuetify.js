@@ -17,6 +17,7 @@ import {
   VExpansionPanel,
   VTextField,
   VTextarea,
+  VAlert,
   transitions
 } from 'vuetify'
 import 'vuetify/src/stylus/app.styl'
@@ -39,6 +40,7 @@ Vue.use(Vuetify, {
     VExpansionPanel,
     VTextField,
     VTextarea,
+    VAlert,
     transitions
   },
   theme: {
