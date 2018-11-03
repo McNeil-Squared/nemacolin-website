@@ -30,8 +30,7 @@ export default {
       menuItems: [
         { name: 'Resident Info', to: '/info', color: 'primary' },
         { name: 'FAQ\u2019s', to: '/faqs', color: 'primary' },
-        { name: 'Contact', to: '/contact', color: 'primary' },
-        { name: 'Login', to: '/login', color: 'accent' }
+        { name: 'Contact', to: '/contact', color: 'primary' }
       ],
       src: require('../../assets/sdlogo.png'),
       alt: 'Nemacolin Logo'
