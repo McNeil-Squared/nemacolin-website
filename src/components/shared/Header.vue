@@ -20,7 +20,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       dropdownMenuItems: [
         { name: 'Sewage Service', to: '/sewage' },

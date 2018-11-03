@@ -22,9 +22,9 @@ import totter from '../assets/totter.png'
 import horses from '../assets/horses.png'
 import pavilion from '../assets/pavilion.png'
 import ballfield from '../assets/ballfield.png'
-import pavilionRentalInfo from '../assets/docs/pavilionRentalInfo.pdf'
-import pavilionRentalApp from '../assets/docs/pavilionRentalApp.pdf'
-import guidebook from '../assets/docs/guidebook2017.pdf'
+// import pavilionRentalInfo from '../assets/docs/pavilionRentalInfo.pdf'
+// import pavilionRentalApp from '../assets/docs/pavilionRentalApp.pdf'
+// import guidebook from '../assets/docs/guidebook2017.pdf'
 
 export default {
   data () {
@@ -39,8 +39,10 @@ export default {
         ]
       },
       features: [
-        { img: pavilion, alt: 'the pavilion', title: 'The Pavilion', text: `We have a covered pavilion that is a terrific site for birthday parties, graduation parties, and family gatherings.&nbsp;&nbsp;Housing eight picnic tables that are accessible from all sides, our pavilion stands as the centerpiece of the park.&nbsp;&nbsp;All community members are welcome to use the pavilion on a first come, first served basis.&nbsp;&nbsp;If you would like information on reserving the pavilion for your next function, please <a href="${pavilionRentalInfo}">click here</a>.<br><br>For a reservation agreement, <a href="${pavilionRentalApp}">click here.</a>` },
-        { img: ballfield, alt: 'the ballfield', title: 'The Ballfield', text: `Our ball field has had quite a makeover in the last few years.&nbsp;&nbsp;We now host King Coal Little League team practice and King Coal Softball League practice.&nbsp;&nbsp;If you are interested in reserving our field, please <a href="${guidebook}">click here.</a>` }
+        // { img: pavilion, alt: 'the pavilion', title: 'The Pavilion', text: `We have a covered pavilion that is a terrific site for birthday parties, graduation parties, and family gatherings.&nbsp;&nbsp;Housing eight picnic tables that are accessible from all sides, our pavilion stands as the centerpiece of the park.&nbsp;&nbsp;All community members are welcome to use the pavilion on a first come, first served basis.&nbsp;&nbsp;If you would like information on reserving the pavilion for your next function, please <a href="${pavilionRentalInfo}">click here</a>.<br><br>For a reservation agreement, <a href="${pavilionRentalApp}">click here.</a>` },
+        { img: pavilion, alt: 'the pavilion', title: 'The Pavilion', text: `We have a covered pavilion that is a terrific site for birthday parties, graduation parties, and family gatherings.&nbsp;&nbsp;Housing eight picnic tables that are accessible from all sides, our pavilion stands as the centerpiece of the park.&nbsp;&nbsp;All community members are welcome to use the pavilion on a first come, first served basis.&nbsp;&nbsp;If you would like information on reserving the pavilion for your next function, please call 724-320-2750.` },
+        // { img: ballfield, alt: 'the ballfield', title: 'The Ballfield', text: `Our ball field has had quite a makeover in the last few years.&nbsp;&nbsp;We now host King Coal Little League team practice and King Coal Softball League practice.&nbsp;&nbsp;If you are interested in reserving our field, please <a href="${guidebook}">click here.</a>` }
+        { img: ballfield, alt: 'the ballfield', title: 'The Ballfield', text: `Our ball field has had quite a makeover in the last few years.&nbsp;&nbsp;We now host King Coal Little League team practice and King Coal Softball League practice.&nbsp;&nbsp;If you are interested in reserving our field, please call 724-320-2750.` }
       ]
     }
   }
