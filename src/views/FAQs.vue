@@ -7,7 +7,7 @@
           v-expansion-panel-content(v-for="(item,i) in questions" :key="i" expand-icon="fas fa-caret-down")
             div.subheading(slot="header") {{ item.question }}
             v-card
-              v-card-text.grey.lighten-2(v-html="item.answer")
+              v-card-text.grey.lighten-3(v-html="item.answer")
 </template>
 
 <script>
