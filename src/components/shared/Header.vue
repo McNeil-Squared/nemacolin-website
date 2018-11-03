@@ -32,7 +32,7 @@ export default {
         { name: 'FAQ\u2019s', to: '/faqs', color: 'primary' },
         { name: 'Contact', to: '/contact', color: 'primary' }
       ],
-      src: require('../../assets/sdlogo.png'),
+      src: require('../../assets/nilogo.png'),
       alt: 'Nemacolin Logo'
     }
   },
