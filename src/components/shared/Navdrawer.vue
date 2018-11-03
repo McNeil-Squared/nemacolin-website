@@ -38,10 +38,10 @@ export default {
         ]
       },
       menu: [
-          { link: '/info', title: 'Resident Info' },
-          { link: '/faqs', title: 'FAQ\u2019s' },
-          { link: '/contact', title: 'Contact' },
-          { link: '/login', title: 'Login' }
+        { link: '/info', title: 'Resident Info' },
+        { link: '/faqs', title: 'FAQ\u2019s' },
+        { link: '/contact', title: 'Contact' }
+        // { link: '/login', title: 'Login' }
       ]
     }
   },
@@ -49,7 +49,7 @@ export default {
     toggleNavDrawer () { this.$store.dispatch('toggleDrawer') }
   },
   computed: {
-    drawer() { return this.$store.getters.navDrawer }
+    drawer () { return this.$store.getters.navDrawer }
   },
   created () {
     // Set the width of the mobile menu to fullscreen.  Percent and vw values are not allowed.
