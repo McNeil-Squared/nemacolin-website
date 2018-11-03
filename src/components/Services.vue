@@ -2,7 +2,7 @@
   div
     p.title.text-xs-center.mt-4.primary--text Services
     v-layout.services--container(row wrap)
-      router-link.flex.service.xs12.md2(v-for="service in services" index="service.name" tag="div" :to="service.to")
+      router-link.flex.service.xs12.md2(v-for="(service,i) in services" :key="i" tag="div" :to="service.to")
         v-icon.mr-5(color="white") {{ service.icon }}
         p {{ service.name }}
 </template>
@@ -23,12 +23,11 @@ export default {
 }
 </script>
 
-
 <style lang="scss" scoped>
   .services--container {
     justify-content: center;
     .service {
-      background-color: #0354ce;
+      background-color: #235789;
       margin: 0.25rem;
       padding: 0.5rem;
       display: flex;
@@ -38,7 +37,7 @@ export default {
       cursor: pointer;
       transition: all 0.3s;
       &:hover {
-        background-color: #0464f5;
+        background-color: #235789;
       }
       p {
         margin: 0;

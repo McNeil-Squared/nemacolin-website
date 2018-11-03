@@ -79,7 +79,7 @@ app.post('/', (req, res) => {
     
     .logo-caption {
       text-align: center;
-      color: #297A4A;
+      color: #ba1b1d;
       
       border-top: none;
       padding-top: 0
@@ -95,9 +95,9 @@ app.post('/', (req, res) => {
       padding-bottom: 1.0rem !important;
     }
     .hr {
-      background-color: #297A4A !important;
+      background-color: #ba1b1d !important;
       padding: 0 !important;
-      border: 1px solid #297A4A;
+      border: 1px solid #ba1b1d;
       border-radius: 2px;
       height: 4px;
     }
@@ -122,7 +122,7 @@ app.post('/', (req, res) => {
   <div class="wrapper">
     <table class="message">
       <tr><td colspan="2" class="logo">
-        <img src="https://smellydogcoding.com/favicons/favicon-96x96.png" alt="smellydog coding logo">
+        <img src="https://nemacolininc.com/favicons/favicon-96x96.png" alt="nemacolin logo">
       </td></tr>
       <tr><td colspan="2" class="logo-caption">Nemacolin Inc</td></tr>
       <tr><td colspan="2" class="title">New Contact Form Entry</td></tr>

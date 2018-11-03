@@ -12,7 +12,7 @@
       v-expansion-panel
           v-expansion-panel-content(expand-icon="fas fa-caret-down")
             div(slot="header") {{ dropmenu.title }}
-            router-link.dense-menu(:to="item.link" tag="v-list-tile" active-class="active" v-for="item in dropmenu.submenu" :key="item.link")
+            router-link.dense-menu(:to="item.link" tag="v-list-tile" active-class="active" v-for="item in dropmenu.submenu" :key="item.link" @click="toggleNavDrawer")
               v-list-tile-content
                 v-list-tile-title {{ item.title }}
     v-list(v-for='item in menu' :key='item.link')
