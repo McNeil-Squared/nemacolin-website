@@ -44,9 +44,9 @@ Vue.use(Vuetify, {
     transitions
   },
   theme: {
-    primary: '#0e54ce',
+    primary: '#ba1b1d',
     secondary: '#a31621',
-    accent: '#3ddc97',
+    accent: '#161925',
     error: '#FF5252',
     info: '#2196F3',
     success: '#4CAF50',
