@@ -41,3 +41,12 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .v-avatar {
+    @media screen and (max-width: 640px) {
+      height: 40px !important;
+      width: 40px !important;
+    }
+  }
+</style>

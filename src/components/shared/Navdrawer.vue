@@ -1,11 +1,11 @@
 <template lang="pug">
   v-navigation-drawer.pb-0(:value="drawer" dark temporary fixed right :width="width" :height="height")
     v-list.pa-1
-      v-list-tile.dense-menu
+      router-link.dense-menu(to="/" tag="v-list-tile" exact-active-class="active")
         v-list-tile-content
           v-list-tile-title {{ title }}
         v-list-tile-action
-            v-btn(icon @click="toggleNavDrawer")
+            v-btn.closer(icon @click="toggleNavDrawer")
               v-icon far fa-times-circle
     v-list.pt-0
       v-divider(light)
@@ -26,7 +26,7 @@
 export default {
   data () {
     return {
-      title: 'Menu',
+      title: 'Home',
       width: '',
       height: '600',
       dropmenu: {
@@ -59,6 +59,14 @@ export default {
 </script>
 
 <style lang="scss">
+  .active {
+    background: #eedbdb;
+    color: #ba1b1d;
+  }
+
+  .closer {
+    background: #424242;
+  }
   // compact the mobile menu for small devices
   .dense-menu > a, .dense-menu > div {
     @media screen and (max-width: 500px) {
