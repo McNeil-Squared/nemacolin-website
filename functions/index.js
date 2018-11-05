@@ -51,107 +51,136 @@ app.post('/', (req, res) => {
     const ipCountry = req.body.ipData.country
     const ipCoords = req.body.ipData.loc
   
-    const htmlBlock = `
-    <style>
-      .wrapper {
-        margin: 0;
-        padding: 1.0rem 0;
-        background-color: #ccc
-      }
+    // const htmlBlock = `
+    // <style>
+    //   .wrapper {
+    //     margin: 0;
+    //     padding: 1.0rem 0;
+    //     background-color: #ccc
+    //   }
       
-      .message, .info {
-        font-family: 'Roboto', sans-serif;
-        border-collapse: collapse;
-        margin: auto;
-        width: 90%;
-        background-color: #fff;
-        margin: auto;
-      }
+    //   .message, .info {
+    //     font-family: 'Roboto', sans-serif;
+    //     border-collapse: collapse;
+    //     margin: auto;
+    //     width: 90%;
+    //     background-color: #fff;
+    //     margin: auto;
+    //   }
       
-      .message td, .info td {
-        padding: 0.5rem;
-        background-color: #fff;
-      }
+    //   .message td, .info td {
+    //     padding: 0.5rem;
+    //     background-color: #fff;
+    //   }
       
-      .info td {
-        border: 1px solid #000;
-      }
+    //   .info td {
+    //     border: 1px solid #000;
+    //   }
       
-      img {
-        display: block;
-        margin: auto;
-      }
+    //   img {
+    //     display: block;
+    //     margin: auto;
+    //   }
       
-      .logo {
-        border-bottom: 0;
-        padding-bottom: 0;
-      }
+    //   .logo {
+    //     border-bottom: 0;
+    //     padding-bottom: 0;
+    //   }
       
-      .logo-caption {
-        text-align: center;
-        color: #ba1b1d;
+    //   .logo-caption {
+    //     text-align: center;
+    //     color: #ba1b1d;
         
-        border-top: none;
-        padding-top: 0
-      }
+    //     border-top: none;
+    //     padding-top: 0
+    //   }
       
-      .logo-caption, .title, .name, .ip-title {
-        font-weight: 600;
-      }
+    //   .logo-caption, .title, .name, .ip-title {
+    //     font-weight: 600;
+    //   }
       
-      .title {
-        font-size: 1.25rem;
-        text-align: center;
-        padding-bottom: 1.0rem !important;
-      }
-      .hr {
-        background-color: #ba1b1d !important;
-        padding: 0 !important;
-        border: 1px solid #ba1b1d;
-        border-radius: 2px;
-        height: 4px;
-      }
+    //   .title {
+    //     font-size: 1.25rem;
+    //     text-align: center;
+    //     padding-bottom: 1.0rem !important;
+    //   }
+    //   .hr {
+    //     background-color: #ba1b1d !important;
+    //     padding: 0 !important;
+    //     border: 1px solid #ba1b1d;
+    //     border-radius: 2px;
+    //     height: 4px;
+    //   }
       
-      .from {
-        padding-top: 1.0rem !important;
-      }
+    //   .from {
+    //     padding-top: 1.0rem !important;
+    //   }
       
-      .name {
-        width: 10%;
-      }
+    //   .name {
+    //     width: 10%;
+    //   }
       
-      .message-name {
-        text-align: center;
-      }
+    //   .message-name {
+    //     text-align: center;
+    //   }
       
-      .ip-title {
-        text-align: center;
-      }
-    </style>
+    //   .ip-title {
+    //     text-align: center;
+    //   }
+    // </style>
+    // <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    // <div class="wrapper">
+    //   <table class="message">
+    //     <tr><td colspan="2" class="logo">
+    //       <img src="http://localhost:5000/favicons/favicon-96x96.png" alt="nemacolin logo">
+    //     </td></tr>
+    //     <tr><td colspan="2" class="logo-caption">Nemacolin Inc</td></tr>
+    //     <tr><td colspan="2" class="title">New Contact Form Entry</td></tr>
+    //     <tr><td colspan="2" class="hr"></td></tr>
+    //     <tr><td class="name from">From:</td><td class="content from">${name}</td></tr>
+    //     <tr><td class="name">Email:</td><td>${email}</td></tr>
+    //     <tr><td colspan="2" class="name message-name">Message</td></tr>
+    //     <tr><td colspan="2">${message}</td></tr>
+    //   </table>
+    //   <table class="info">
+    //     <p class="ip-title">Submitter Information</p>
+    //     <tr><td>ip</td><td id="ip">${ipAddress}</td></tr>
+    //     <tr><td>Host</td><td id="ip-coords">${ipHostname}</td></tr>
+    //     <tr><td>Organization</td><td id="ip-org">${ipOrganization}</td></tr>
+    //     <tr><td>City</td><td id="ip-city">${ipCity}</td></tr>
+    //     <tr><td>Region</td><td id="ip-region">${ipRegion}</td></tr>
+    //     <tr><td>Zip Code</td><td id="ip-coords">${ipZipcode}</td></tr>
+    //     <tr><td>Country</td><td id="ip-country">${ipCountry}</td></tr>
+    //     <tr><td>Coords</td><td id="ip-coords">${ipCoords}</td></tr>
+    //   </table>
+    // </div>
+    // `
+
+    const htmlBlock = `
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <div class="wrapper">
-      <table class="message">
-        <tr><td colspan="2" class="logo">
-          <img src="http://localhost:5000/favicons/favicon-96x96.png" alt="nemacolin logo">
+    <div class="wrapper" style="margin: 0;padding: 1.0rem 0;background-color: #ccc;">
+      <table class="message" style="font-family: 'Roboto', sans-serif;border-collapse: collapse;margin: auto;width: 90%;background-color: #fff;">
+        <tr><td colspan="2" class="logo" style="border-bottom: 0;padding-bottom: 0;padding: 0.5rem;background-color: #fff;">
+          <img src="http://localhost:5000/favicons/favicon-96x96.png" alt="nemacolin logo" style="display: block;margin: auto;">
         </td></tr>
-        <tr><td colspan="2" class="logo-caption">Nemacolin Inc</td></tr>
-        <tr><td colspan="2" class="title">New Contact Form Entry</td></tr>
-        <tr><td colspan="2" class="hr"></td></tr>
-        <tr><td class="name from">From:</td><td class="content from">${name}</td></tr>
-        <tr><td class="name">Email:</td><td>${email}</td></tr>
-        <tr><td colspan="2" class="name message-name">Message</td></tr>
-        <tr><td colspan="2">${message}</td></tr>
+        <tr><td colspan="2" class="logo-caption" style="text-align: center;color: #ba1b1d;border-top: none;padding-top: 0;font-weight: 600;padding: 0.5rem;background-color: #fff;">Nemacolin Inc</td></tr>
+        <tr><td colspan="2" class="title" style="font-weight: 600;font-size: 1.25rem;text-align: center;padding: 0.5rem;background-color: #fff;padding-bottom: 1.0rem !important;">New Contact Form Entry</td></tr>
+        <tr><td colspan="2" class="hr" style="border: 1px solid #ba1b1d;border-radius: 2px;height: 4px;padding: 0 !important;background-color: #ba1b1d !important;"></td></tr>
+        <tr><td class="name from" style="font-weight: 600;width: 10%;padding: 0.5rem;background-color: #fff;padding-top: 1.0rem !important;">From:</td><td class="content from" style="padding: 0.5rem;background-color: #fff;padding-top: 1.0rem !important;">${name}</td></tr>
+        <tr><td class="name" style="font-weight: 600;width: 10%;padding: 0.5rem;background-color: #fff;">Email:</td><td style="padding: 0.5rem;background-color: #fff;">${email}</td></tr>
+        <tr><td colspan="2" class="name message-name" style="font-weight: 600;width: 10%;text-align: center;padding: 0.5rem;background-color: #fff;">Message</td></tr>
+        <tr><td colspan="2" style="padding: 0.5rem;background-color: #fff;">${message}</td></tr>
       </table>
-      <table class="info">
-        <p class="ip-title">Submitter Information</p>
-        <tr><td>ip</td><td id="ip">${ipAddress}</td></tr>
-        <tr><td>Host</td><td id="ip-coords">${ipHostname}</td></tr>
-        <tr><td>Organization</td><td id="ip-org">${ipOrganization}</td></tr>
-        <tr><td>City</td><td id="ip-city">${ipCity}</td></tr>
-        <tr><td>Region</td><td id="ip-region">${ipRegion}</td></tr>
-        <tr><td>Zip Code</td><td id="ip-coords">${ipZipcode}</td></tr>
-        <tr><td>Country</td><td id="ip-country">${ipCountry}</td></tr>
-        <tr><td>Coords</td><td id="ip-coords">${ipCoords}</td></tr>
+      <table class="info" style="font-family: 'Roboto', sans-serif;border-collapse: collapse;margin: auto;width: 90%;background-color: #fff;">
+        <p class="ip-title" style="font-weight: 600;text-align: center;">Submitter Information</p>
+        <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">ip</td><td id="ip" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipAddress}</td></tr>
+        <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">Host</td><td id="ip-coords" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipHostname}</td></tr>
+        <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">Organization</td><td id="ip-org" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipOrganization}</td></tr>
+        <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">City</td><td id="ip-city" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipCity}</td></tr>
+        <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">Region</td><td id="ip-region" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipRegion}</td></tr>
+        <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">Zip Code</td><td id="ip-coords" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipZipcode}</td></tr>
+        <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">Country</td><td id="ip-country" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipCountry}</td></tr>
+        <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">Coords</td><td id="ip-coords" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipCoords}</td></tr>
       </table>
     </div>
     `
