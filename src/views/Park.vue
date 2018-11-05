@@ -7,7 +7,7 @@
     v-layout.mb-3(row wrap)
       v-flex(xs12)
         h2.accent--text.pl-3 {{ playground.title }}
-        p.px-3 {{ playground.text }}
+        p.px-3(v-html="playground.text")
     v-layout(row wrap)
       v-flex.text-xs-center(xs12 md6 v-for="item in features" :key="item.alt")
         img(:src="item.img" alt="item.alt")
