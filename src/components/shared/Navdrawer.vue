@@ -1,13 +1,17 @@
 <template lang="pug">
   v-navigation-drawer.pb-0(:value="drawer" dark temporary fixed right :width="width" :height="height")
     v-list.pa-1
-      router-link.dense-menu(to="/" tag="v-list-tile" exact-active-class="active")
+      v-list-tile.dense-menu
         v-list-tile-content
           v-list-tile-title {{ title }}
         v-list-tile-action
             v-btn.closer(icon @click="toggleNavDrawer")
               v-icon far fa-times-circle
     v-list.pt-0
+      router-link.dense-menu.mb-2(to="/" tag="v-list-tile" exact-active-class="active")
+        v-list-tile.dense-menu
+          v-list-tile-content
+            v-list-tile-title Home
       v-divider(light)
       v-expansion-panel
           v-expansion-panel-content(expand-icon="fas fa-caret-down")
@@ -26,7 +30,7 @@
 export default {
   data () {
     return {
-      title: 'Home',
+      title: 'Nemacolin Inc',
       width: '',
       height: '600',
       dropmenu: {
