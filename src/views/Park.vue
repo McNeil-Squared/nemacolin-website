@@ -11,7 +11,7 @@
     v-layout(row wrap)
       v-flex.text-xs-center(xs12 md6 v-for="item in features" :key="item.alt")
         img(:src="item.img" alt="item.alt")
-        h2.accent--text {{ item.title }}
+        h2.accent--text.mt-3 {{ item.title }}
         p.px-3.text-xs-left(v-html="item.text")
 
 </template>
@@ -40,9 +40,9 @@ export default {
       },
       features: [
         // { img: pavilion, alt: 'the pavilion', title: 'The Pavilion', text: `We have a covered pavilion that is a terrific site for birthday parties, graduation parties, and family gatherings.&nbsp;&nbsp;Housing eight picnic tables that are accessible from all sides, our pavilion stands as the centerpiece of the park.&nbsp;&nbsp;All community members are welcome to use the pavilion on a first come, first served basis.&nbsp;&nbsp;If you would like information on reserving the pavilion for your next function, please <a href="${pavilionRentalInfo}">click here</a>.<br><br>For a reservation agreement, <a href="${pavilionRentalApp}">click here.</a>` },
-        { img: pavilion, alt: 'the pavilion', title: 'The Pavilion', text: `We have a covered pavilion that is a terrific site for birthday parties, graduation parties, and family gatherings.&nbsp;&nbsp;Housing eight picnic tables that are accessible from all sides, our pavilion stands as the centerpiece of the park.&nbsp;&nbsp;All community members are welcome to use the pavilion on a first come, first served basis.&nbsp;&nbsp;If you would like information on reserving the pavilion for your next function, please call 724-320-2750.` },
+        { img: pavilion, alt: 'the pavilion', title: 'The Pavilion', text: `We have a covered pavilion that is a terrific site for birthday parties, graduation parties, and family gatherings.&nbsp;&nbsp;Housing eight picnic tables that are accessible from all sides, our pavilion stands as the centerpiece of the park.&nbsp;&nbsp;All community members are welcome to use the pavilion on a first come, first served basis.&nbsp;&nbsp;If you would like information on reserving the pavilion for your next function, please call <a href="tel:724-320-2750">724-320-2750</a>.` },
         // { img: ballfield, alt: 'the ballfield', title: 'The Ballfield', text: `Our ball field has had quite a makeover in the last few years.&nbsp;&nbsp;We now host King Coal Little League team practice and King Coal Softball League practice.&nbsp;&nbsp;If you are interested in reserving our field, please <a href="${guidebook}">click here.</a>` }
-        { img: ballfield, alt: 'the ballfield', title: 'The Ballfield', text: `Our ball field has had quite a makeover in the last few years.&nbsp;&nbsp;We now host King Coal Little League team practice and King Coal Softball League practice.&nbsp;&nbsp;If you are interested in reserving our field, please call 724-320-2750.` }
+        { img: ballfield, alt: 'the ballfield', title: 'The Ballfield', text: `Our ball field has had quite a makeover in the last few years.&nbsp;&nbsp;We now host King Coal Little League team practice and King Coal Softball League practice.&nbsp;&nbsp;If you are interested in reserving our field, please call <a href="tel:724-320-2750">724-320-2750</a>.` }
       ]
     }
   }

@@ -63,7 +63,6 @@ export default {
         let messageData = { name: this.name, email: this.email.toLowerCase(), message: this.message, ipData: this.ipData, apiKey: process.env.VUE_APP_CONTACTFORMAPIKEY }
         axios.post('http://localhost:5001/nemacolin-website/us-central1/widgets', messageData)
           .then(res => {
-            console.log(res)
             res.status === 200 ? this.status = 'success' : this.status = 'fail'
             this.sending = false
             this.clear()

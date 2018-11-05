@@ -132,7 +132,7 @@ app.post('/', (req, res) => {
     <div class="wrapper">
       <table class="message">
         <tr><td colspan="2" class="logo">
-          <img src="https://nemacolininc.com/favicons/favicon-96x96.png" alt="nemacolin logo">
+          <img src="http://localhost:5000/favicons/favicon-96x96.png" alt="nemacolin logo">
         </td></tr>
         <tr><td colspan="2" class="logo-caption">Nemacolin Inc</td></tr>
         <tr><td colspan="2" class="title">New Contact Form Entry</td></tr>
@@ -158,7 +158,7 @@ app.post('/', (req, res) => {
   
     const mailOptions = {
       from: `"${name}" ${email}`,
-      to: 'daniel.mcneil@outlook.com',
+      to: 'info@nemacolininc.com',
       subject: 'New Nemacolin Contact Form Entry',
       html: htmlBlock
     }

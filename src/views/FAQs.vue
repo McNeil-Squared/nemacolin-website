@@ -17,7 +17,7 @@ export default {
       questions: [
         { question: 'When is my bill due?', answer: 'You have until the fifth of the following month to pay.&nbsp;&nbsp;For example, if the current month is May, you have until June 5th to send in your payment.&nbsp;&nbsp;Any payments received after the fifth will incur a $2.00 late fee.' },
         { question: 'Do you have an office where I can pay my bill or a drop box?', answer: 'No.&nbsp;&nbsp;All payments are to be mailed to Nemacolin, Inc., PO Box 484, Nemacolin, PA 15351.&nbsp;&nbsp;<b>DO NOT SEND CASH</b>.' },
-        { question: 'Who do I contact for questions concerning my account?', answer: 'You can call our customer service line at (724) 320-2750.&nbsp;&nbsp;Our office hours are 9:00 am to 1:30 pm, Monday through Friday.' }
+        { question: 'Who do I contact for questions concerning my account?', answer: 'You can call our customer service line at <a href="tel:724-320-2750">724-320-2750</a>.&nbsp;&nbsp;Our office hours are 9:00 am to 1:30 pm, Monday through Friday.' }
       ]
     }
   }
