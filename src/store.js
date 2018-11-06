@@ -9,23 +9,22 @@ export default new Vuex.Store({
     navDrawer: false
   },
   getters: {
-    navDrawer: state => { return state.navDrawer }
+    navDrawer (state) {
+      return state.navDrawer
+    }
   },
   mutations: {
-    toggleDrawer: (state) => {
+    toggleDrawer (state) {
       state.navDrawer = !state.navDrawer
     },
-    userLoginError: (state) => {
+    userLoginError (state) {
       state.status = 'fail'
       state.sending = 'false'
     }
   },
   actions: {
-    toggleDrawer: ({ commit }) => {
+    toggleDrawer ({ commit }) {
       commit('toggleDrawer')
-    },
-    signin: ({ commit, dispatch }, loginData) => {
-      console.log(loginData)
     }
   }
 })
