@@ -18,6 +18,9 @@ export default {
     appHeader: Header,
     appFooter: Footer,
     appNavdrawer: Navdrawer
+  },
+  created () {
+    this.$store.dispatch('refreshLogin')
   }
 }
 </script>

@@ -8,6 +8,7 @@
           v-text-field(v-model="password" :error-messages="passwordErrors" label="Password" required @input="$v.password.$touch()" @blur="$v.password.$touch()" solo)
           v-btn(v-if="status != 'success'" @click="submit" color="primary" :loading="sending" :disabled="sending") Submit
           v-btn(v-if="status != 'success'" @click="testing" color="warning") Test Login
+          v-btn(v-if="status != 'success'" @click="update" color="warning") Update
         v-alert(v-if="status === 'fail' && !sending" type="error" icon="close" value="true") Incorrect username or password.
         p.mt-3(@click="console.log('i forgot')") I forgot my password.
 </template>
@@ -16,6 +17,7 @@
 import { validationMixin } from 'vuelidate'
 import { required } from 'vuelidate/lib/validators'
 import axios from 'axios'
+import firebase from 'firebase'
 export default {
   data () {
     return {
@@ -28,7 +30,7 @@ export default {
   mixins: [validationMixin],
   validations: {
     username: { required },
-    password: { required },
+    password: { required }
   },
   computed: {
     usernameErrors () {
@@ -51,21 +53,25 @@ export default {
         this.sending = true
         let loginData = { email: this.username.toLowerCase(), password: this.password, returnSecureToken: true }
         axios.post(`https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=${process.env.VUE_APP_FIREBASEAPIKEY}`, loginData)
-        .then(res => {
-          // this.$router.push('/dashboard')
-          console.log(res)
-          this.sending = false
-        })
-        .catch(error => {
-          console.log(error)
-          this.status = 'fail'
-          this.sending = false
-        })
+          .then(res => {
+            // this.$router.push('/dashboard')
+            console.log(res)
+            this.sending = false
+          })
+          .catch(error => {
+            console.log(error)
+            this.status = 'fail'
+            this.sending = false
+          })
       }
     },
     testing () {
       let loginData = { email: process.env.VUE_APP_TESTLOGINUSER, password: process.env.VUE_APP_TESTLOGINPASS }
       this.$store.dispatch('signin', loginData)
+    },
+    update () {
+      let user = firebase.auth().currentUser
+      user.updateProfile({ displayName: 'Daniel McNeil' })
     }
   }
 }

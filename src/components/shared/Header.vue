@@ -14,6 +14,13 @@
           v-list-tile(v-for="item in dropdownMenuItems" :key="item.name" @click="" :to="item.to")
             v-list-tile-title {{ item.name }}
       v-btn.hidden-sm-and-down(:color='item.color' flat v-for="item in menuItems" :key="item.name" :to="item.to") {{ item.name }}
+      v-btn.hidden-sm-and-down(color="accent" flat v-if="user == null" to='/login') Login
+      v-menu.hidden-sm-and-down(open-on-hover offset-y v-else)
+        v-btn(slot="activator" color='secondary' flat) Hello {{ user.displayName }}
+          v-icon.ml-2.mb-1(color='secondary') fas fa-caret-down
+        v-list
+          v-list-tile(v-for="(item,i) in dropdownUserItems" :key="i" @click="doTheThing(item.action)" :to="item.to")
+            v-list-tile-title {{ item.name }}
       v-toolbar-side-icon.hidden-md-and-up(@click="toggleNavDrawer")
         v-icon fas fa-bars
 </template>
@@ -32,12 +39,22 @@ export default {
         { name: 'FAQ\u2019s', to: '/faqs', color: 'primary' },
         { name: 'Contact', to: '/contact', color: 'primary' }
       ],
+      dropdownUserItems: [
+        { name: 'Dashboard', action: '', to: '/dashboard' },
+        { name: 'Logout', action: 'logout', to: '' }
+      ],
       src: require('../../assets/nilogo.png'),
       alt: 'Nemacolin Logo'
     }
   },
   methods: {
-    toggleNavDrawer () { this.$store.dispatch('toggleDrawer') }
+    toggleNavDrawer () { this.$store.dispatch('toggleDrawer') },
+    doTheThing (action) {
+      if (action === 'logout') { this.$store.dispatch('logout') }
+    }
+  },
+  computed: {
+    user () { return this.$store.getters.userData }
   }
 }
 </script>

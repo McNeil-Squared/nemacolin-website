@@ -1,5 +1,6 @@
 import '@babel/polyfill'
 import Vue from 'vue'
+import firebase from './firebase'
 import './plugins/vuetify'
 import App from './App.vue'
 import router from './router'
@@ -8,8 +9,10 @@ import 'whatwg-fetch'
 
 Vue.config.productionTip = false
 
-new Vue({
-  router,
-  store,
-  render: h => h(App)
-}).$mount('#app')
+firebase.auth().onAuthStateChanged(user => {
+  new Vue({
+    router,
+    store,
+    render: h => h(App)
+  }).$mount('#app')
+})
