@@ -7,9 +7,7 @@
           v-text-field(v-model="username" :error-messages="usernameErrors" label="Username" required @input="$v.username.$touch()" @blur="$v.username.$touch()" solo)
           v-text-field(v-model="password" :error-messages="passwordErrors" label="Password" required @input="$v.password.$touch()" @blur="$v.password.$touch()" solo type="password")
           v-btn(v-if="status != 'success'" @click="submit" color="primary" :loading="sending" :disabled="sending") Submit
-          //- v-btn(v-if="status != 'success'" @click="testing" color="warning") Test Login
-          //- v-btn(v-if="status != 'success'" @click="update" color="warning") Update
-        v-alert(v-if="status === 'fail' && !sending" type="error" icon="close" value="true") Incorrect username or password.
+        v-alert(v-if="status === 'error' && !sending" type="error" icon="fas fa-times" value="true") Incorrect username or password.
         p.mt-3(@click="console.log('i forgot')") I forgot my password.
 </template>
 
@@ -50,28 +48,18 @@ export default {
     submit () {
       this.$v.$touch()
       if (!this.$v.$invalid) {
+        this.status = ''
         this.sending = true
         let loginData = { email: this.username.toLowerCase(), password: this.password }
         firebase.auth().signInWithEmailAndPassword(loginData.email, loginData.password)
-          .then((userObject) => {
-            this.$store.dispatch('setUserData', userObject.user)
+          .then((userObject) => this.$store.dispatch('setUserData', userObject.user))
+          .then(this.$router.replace('/dashboard'))
+          .catch((error) => {
+            console.log(error)
+            this.status = 'error'
             this.sending = false
           })
-          .then(this.$router.replace('/dashboard'))
-          .catch(error => console.log(error))
       }
-    },
-    // testing () {
-    //   let loginData = { email: process.env.VUE_APP_TESTLOGINUSER, password: process.env.VUE_APP_TESTLOGINPASS }
-    //   firebase.auth().signInWithEmailAndPassword(loginData.email, loginData.password)
-    //     .then(userObject => this.$store.dispatch('setUserData', userObject.user))
-    //       .then((result) => this.$router.replace('/dashboard'))
-    //       .catch(error => console.log(error))
-    //     .catch(error => console.log(error))
-    // },
-    update () {
-      let user = firebase.auth().currentUser
-      user.updateProfile({ displayName: 'Daniel McNeil' })
     }
   }
 }

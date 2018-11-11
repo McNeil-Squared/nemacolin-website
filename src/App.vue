@@ -21,7 +21,7 @@ export default {
     appFooter: Footer,
     appNavdrawer: Navdrawer
   },
-  beforeCreate () {
+  created () {
     if (this.$store.getters.user == null) {
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {

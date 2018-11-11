@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import router from './router'
 import firebase from 'firebase'
 
 firebase.firestore().settings({ timestampsInSnapshots: true })
@@ -33,7 +32,6 @@ export default new Vuex.Store({
     },
     removeUserSessionData (state) {
       state.user = null
-      router.replace('/')
     }
   },
   actions: {

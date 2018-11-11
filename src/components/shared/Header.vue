@@ -54,7 +54,7 @@ export default {
     doTheThing (action) {
       if (action === 'logout') {
         firebase.auth().signOut()
-          .then(this.$store.commit('removeUserSessionData'))
+          .then(this.$store.dispatch('removeUserSessionData'))
           .catch(error => console.log(error))
       }
     }
