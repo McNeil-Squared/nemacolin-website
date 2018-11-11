@@ -16,7 +16,7 @@ export default new Vuex.Store({
     navDrawer (state) {
       return state.navDrawer
     },
-    userData (state) {
+    user (state) {
       return state.user
     }
   },
@@ -28,53 +28,42 @@ export default new Vuex.Store({
       state.status = 'fail'
       state.sending = 'false'
     },
-    setUser (state, userData) {
+    setUserData (state, userData) {
       state.user = userData
     },
-    logout (state) {
+    removeUserSessionData (state) {
       state.user = null
-      router.push('/')
+      router.replace('/')
     }
   },
   actions: {
     toggleDrawer ({ commit }) {
       commit('toggleDrawer')
     },
-    signin ({ dispatch }, loginData) {
-      firebase.auth().signInWithEmailAndPassword(loginData.email, loginData.password)
-        .then(dispatch('refreshLogin'))
-        .then(router.push('/'))
-        .catch(error => console.log(error))
+    setUserData ({ commit }, user) {
+      return new Promise((resolve, reject) => {
+        firebase.firestore().collection('users').doc(user.uid).get()
+          .then((doc) => {
+            let currentUser = doc.data()
+            let userData = {
+              displayName: user.displayName,
+              uid: user.uid,
+              firstName: currentUser.firstName,
+              lastName: currentUser.lastName,
+              email: currentUser.email,
+              phone: currentUser.phone,
+              house: currentUser.house,
+              pobox: currentUser.poBox,
+              position: currentUser.position,
+              role: currentUser.role
+            }
+            commit('setUserData', userData)
+            resolve('success')
+          }).catch(error => reject(error))
+      })
     },
-    refreshLogin ({ commit }) {
-      let currentUser = firebase.auth().currentUser
-      if (currentUser != null) {
-        firebase.firestore().collection('users').get()
-          .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              let dbdata = doc.data()
-              let userData = {
-                displayName: currentUser.displayName,
-                uid: currentUser.uid,
-                firstName: dbdata.firstName,
-                lastName: dbdata.lastName,
-                email: dbdata.email,
-                phone: dbdata.phone,
-                house: dbdata.house,
-                pobox: dbdata.poBox,
-                position: dbdata.position,
-                role: dbdata.role
-              }
-              commit('setUser', userData)
-            })
-          })
-          .catch(error => console.log(error))
-      }
-    },
-    logout ({ commit }) {
-      firebase.auth().signOut()
-        .then(commit('logout'))
-        .catch(error => console.log(error))
+    removeUserSessionData ({ commit }) {
+      commit('removeUserSessionData')
     }
   }
 })

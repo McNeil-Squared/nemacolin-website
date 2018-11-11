@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from './store'
+import firebase from 'firebase'
 
 Vue.use(Router)
 
@@ -14,7 +15,20 @@ const router = new Router({
     { path: '/info', name: 'info', component: () => import('./views/Info.vue'), meta: { title: 'Resident Information' } },
     { path: '/faqs', name: 'faqs', component: () => import('./views/FAQs.vue'), meta: { title: 'Frequently Asked Questions' } },
     { path: '/contact', name: 'contact', component: () => import('./views/Contact.vue'), meta: { title: 'Contact Us' } },
-    { path: '/login', name: 'login', component: () => import('./views/Login.vue'), meta: { title: 'Login' } }
+    { path: '/login', name: 'login', component: () => import('./views/Login.vue'), meta: { title: 'Login' } },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import('./views/Dashboard.vue'),
+      meta: { title: 'Dashboard' },
+      beforeEnter (to, from, next) {
+        if (store.state.user == null) {
+          firebase.auth().onAuthStateChanged((user) => {
+            user ? next() : next('/login')
+          })
+        } else { next() }
+      }
+    }
   ]
 })
 

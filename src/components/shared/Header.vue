@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import firebase from 'firebase'
+
 export default {
   data () {
     return {
@@ -50,11 +52,15 @@ export default {
   methods: {
     toggleNavDrawer () { this.$store.dispatch('toggleDrawer') },
     doTheThing (action) {
-      if (action === 'logout') { this.$store.dispatch('logout') }
+      if (action === 'logout') {
+        firebase.auth().signOut()
+          .then(this.$store.commit('removeUserSessionData'))
+          .catch(error => console.log(error))
+      }
     }
   },
   computed: {
-    user () { return this.$store.getters.userData }
+    user () { return this.$store.getters.user }
   }
 }
 </script>

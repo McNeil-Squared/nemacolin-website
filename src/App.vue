@@ -13,14 +13,23 @@
 import Header from './components/shared/Header'
 import Navdrawer from './components/shared/Navdrawer'
 import Footer from './components/shared/Footer'
+import firebase from 'firebase'
+
 export default {
   components: {
     appHeader: Header,
     appFooter: Footer,
     appNavdrawer: Navdrawer
   },
-  created () {
-    this.$store.dispatch('refreshLogin')
+  beforeCreate () {
+    if (this.$store.getters.user == null) {
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          this.$store.dispatch('setUserData', user)
+            .catch(error => console.log(error))
+        }
+      })
+    }
   }
 }
 </script>
