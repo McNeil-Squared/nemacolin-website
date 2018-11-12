@@ -3,12 +3,12 @@
     v-layout(row wrap)
       v-flex(xs12 md4 offset-md4)
         form(@submit.prevent="submit" autocomplete="on")
-          h2.mt-2.mb-4 Nemacolin Inc Board Member Login
-          v-text-field(v-model="username" :error-messages="usernameErrors" label="Username" required @input="$v.username.$touch()" @blur="$v.username.$touch()" solo)
-          v-text-field(v-model="password" :error-messages="passwordErrors" label="Password" required @input="$v.password.$touch()" @blur="$v.password.$touch()" solo type="password")
+          h2.mt-2.mb-4 Reset Your Password
+          p.mb-4.black--text Enter your account email below and click submit.
+          v-text-field(v-model="username" :error-messages="usernameErrors" label="Email" required @input="$v.username.$touch()" @blur="$v.username.$touch()" solo)
           v-btn(v-if="status != 'success'" @click="submit" color="primary" :loading="sending" :disabled="sending") Submit
-        v-alert(v-if="status === 'error' && !sending" type="error" icon="fas fa-times" value="true") Incorrect username or password.
-        router-link.mt-3(tag="p" to="/resetpassword") I forgot my password.
+        v-alert(v-if="status === 'success' && !sending" type="success" icon="fas fa-check" value="true") Success!&nbsp;&nbsp;Password reset request received.&nbsp;&nbsp;Please check your email for a link to complete the password reset process.
+        v-alert(v-if="status === 'error' && !sending" type="error" icon="fas fa-times" value="true") {{ errorMessage }}
 </template>
 
 <script>
@@ -20,27 +20,18 @@ export default {
   data () {
     return {
       username: '',
-      password: '',
       sending: false,
-      status: ''
+      status: '',
+      errorMessage: ''
     }
   },
   mixins: [validationMixin],
-  validations: {
-    username: { required },
-    password: { required }
-  },
+  validations: { username: { required } },
   computed: {
     usernameErrors () {
       const errors = []
       if (!this.$v.username.$dirty) return errors
       !this.$v.username.required && errors.push('Username is required.')
-      return errors
-    },
-    passwordErrors () {
-      const errors = []
-      if (!this.$v.password.$dirty) return errors
-      !this.$v.password.required && errors.push('Password is required.')
       return errors
     }
   },
@@ -50,12 +41,15 @@ export default {
       if (!this.$v.$invalid) {
         this.status = ''
         this.sending = true
-        let loginData = { email: this.username.toLowerCase(), password: this.password }
-        firebase.auth().signInWithEmailAndPassword(loginData.email, loginData.password)
-          .then((userObject) => this.$store.dispatch('setUserData', userObject.user))
-          .then(this.$router.replace('/dashboard'))
+        let loginData = { email: this.username.toLowerCase() }
+        firebase.auth().sendPasswordResetEmail(loginData.email)
+          .then(() => {
+            this.status = 'success'
+            this.sending = false
+          })
           .catch((error) => {
             console.log(error)
+            error.code === 'auth/user-not-found' ? this.errorMessage = 'Sorry, there is no account with that email.\u00A0\u00A0Were you registered with a different email?' : this.errorMessage = 'Hmmmm!\u00A0\u00A0It looks like something went wrong.\u00A0\u00A0Please try again.'
             this.status = 'error'
             this.sending = false
           })

@@ -16,6 +16,7 @@ const router = new Router({
     { path: '/faqs', name: 'faqs', component: () => import('./views/FAQs.vue'), meta: { title: 'Frequently Asked Questions' } },
     { path: '/contact', name: 'contact', component: () => import('./views/Contact.vue'), meta: { title: 'Contact Us' } },
     { path: '/login', name: 'login', component: () => import('./views/Login.vue'), meta: { title: 'Login' } },
+    { path: '/resetpassword', name: 'resetpassword', component: () => import('./views/Reset.vue'), meta: { title: 'Reset Password' } },
     {
       path: '/dashboard',
       name: 'dashboard',
