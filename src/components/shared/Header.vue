@@ -57,21 +57,21 @@ export default {
     }
   },
   computed: {
-    user () { return this.$store.getters.user },
-    userMenuItems () {
-      let items = [
-        { name: 'Dashboard', action: '', restricted: 'no', to: '/dashboard' },
-        { name: 'User Profile', action: '', restricted: 'admin', to: '/profile' },
-        { name: 'User Management', action: '', restricted: 'admin', to: '/users' },
-        { name: 'Logout', action: 'logout', restricted: 'no', to: '' }
-      ]
-      let role = this.$store.getters.user.role
-      items.forEach((item) => {
-        if (item.restricted === 'no' || (item.restricted === 'admin' && role === 'admin')) {
-          this.dropdownUserItems.push(item)
-        }
-      })
-    }
+    user () { return this.$store.getters.user }
+  },
+  created () {
+    let items = [
+      { name: 'Dashboard', action: '', restricted: 'no', to: '/dashboard' },
+      { name: 'User Profile', action: '', restricted: 'admin', to: '/profile' },
+      { name: 'User Management', action: '', restricted: 'admin', to: '/users' },
+      { name: 'Logout', action: 'logout', restricted: 'no', to: '' }
+    ]
+    let role = this.$store.getters.user.role
+    items.forEach((item) => {
+      if (item.restricted === 'no' || (item.restricted === 'admin' && role === 'admin')) {
+        this.dropdownUserItems.push(item)
+      }
+    })
   }
 }
 </script>

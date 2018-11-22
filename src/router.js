@@ -17,6 +17,7 @@ const router = new Router({
     { path: '/contact', name: 'contact', component: () => import('./views/Contact.vue'), meta: { title: 'Contact Us' } },
     { path: '/login', name: 'login', component: () => import('./views/Login.vue'), meta: { title: 'Login' } },
     { path: '/resetpassword', name: 'resetpassword', component: () => import('./views/Reset.vue'), meta: { title: 'Reset Password' } },
+    { path: '*', name: '404', component: () => import('./views/FourohFour.vue'), meta: { title: '404 - Page Not Found' } },
     {
       path: '/dashboard',
       name: 'dashboard',
