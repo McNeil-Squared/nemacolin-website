@@ -41,10 +41,7 @@ export default {
         { name: 'FAQ\u2019s', to: '/faqs', color: 'primary' },
         { name: 'Contact', to: '/contact', color: 'primary' }
       ],
-      dropdownUserItems: [
-        { name: 'Dashboard', action: '', to: '/dashboard' },
-        { name: 'Logout', action: 'logout', to: '' }
-      ],
+      dropdownUserItems: [],
       src: require('../../assets/nilogo.png'),
       alt: 'Nemacolin Logo'
     }
@@ -60,7 +57,21 @@ export default {
     }
   },
   computed: {
-    user () { return this.$store.getters.user }
+    user () { return this.$store.getters.user },
+    userMenuItems () {
+      let items = [
+        { name: 'Dashboard', action: '', restricted: 'no', to: '/dashboard' },
+        { name: 'User Profile', action: '', restricted: 'admin', to: '/profile' },
+        { name: 'User Management', action: '', restricted: 'admin', to: '/users' },
+        { name: 'Logout', action: 'logout', restricted: 'no', to: '' }
+      ]
+      let role = this.$store.getters.user.role
+      items.forEach((item) => {
+        if (item.restricted === 'no' || (item.restricted === 'admin' && role === 'admin')) {
+          this.dropdownUserItems.push(item)
+        }
+      })
+    }
   }
 }
 </script>
