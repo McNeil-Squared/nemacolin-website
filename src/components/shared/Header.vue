@@ -47,31 +47,43 @@ export default {
     }
   },
   methods: {
-    toggleNavDrawer () { this.$store.dispatch('toggleDrawer') },
+    toggleNavDrawer () {
+      this.$store.dispatch('toggleDrawer')
+    },
     doTheThing (action) {
       if (action === 'logout') {
         firebase.auth().signOut()
           .then(this.$store.dispatch('removeUserSessionData'))
           .catch(error => console.log(error))
       }
+    },
+    buildUserMenu () {
+      let items = [
+        { name: 'Dashboard', action: '', restricted: 'no', to: '/dashboard' },
+        { name: 'User Profile', action: '', restricted: 'admin', to: '/profile' },
+        { name: 'User Management', action: '', restricted: 'admin', to: '/users' },
+        { name: 'Logout', action: 'logout', restricted: 'no', to: '' }
+      ]
+      if (this.user != null) {
+        this.dropdownUserItems = []
+        let role = this.user.role
+        items.forEach((item) => {
+          if (item.restricted === 'no' || (item.restricted === 'admin' && role === 'admin')) {
+            this.dropdownUserItems.push(item)
+          }
+        })
+      }
     }
   },
   computed: {
-    user () { return this.$store.getters.user }
+    user () {
+      return this.$store.getters.user
+    }
   },
-  created () {
-    let items = [
-      { name: 'Dashboard', action: '', restricted: 'no', to: '/dashboard' },
-      { name: 'User Profile', action: '', restricted: 'admin', to: '/profile' },
-      { name: 'User Management', action: '', restricted: 'admin', to: '/users' },
-      { name: 'Logout', action: 'logout', restricted: 'no', to: '' }
-    ]
-    let role = this.$store.getters.user.role
-    items.forEach((item) => {
-      if (item.restricted === 'no' || (item.restricted === 'admin' && role === 'admin')) {
-        this.dropdownUserItems.push(item)
-      }
-    })
+  watch: {
+    user: function () {
+      this.buildUserMenu()
+    }
   }
 }
 </script>

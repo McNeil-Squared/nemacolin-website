@@ -25,7 +25,6 @@ export default {
     if (this.$store.getters.user == null) {
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-          console.log(user)
           this.$store.dispatch('setUserData', user)
             .catch(error => console.log(error))
         }
