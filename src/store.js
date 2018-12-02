@@ -46,13 +46,7 @@ export default new Vuex.Store({
             let userData = {
               displayName: user.displayName,
               uid: user.uid,
-              email: currentUser.email,
-              firstName: currentUser.firstName,
-              lastName: currentUser.lastName,
-              mailing: currentUser.mailingAddress,
-              phone: currentUser.phone,
-              physical: currentUser.physicalAddress,
-              position: currentUser.position,
+              username: currentUser.username,
               role: currentUser.role
             }
             commit('setUserData', userData)

@@ -17,21 +17,9 @@ const router = new Router({
     { path: '/contact', name: 'contact', component: () => import('./views/Contact.vue'), meta: { title: 'Contact Us' } },
     { path: '/login', name: 'login', component: () => import('./views/Login.vue'), meta: { title: 'Login' } },
     { path: '/resetpassword', name: 'resetpassword', component: () => import('./views/Reset.vue'), meta: { title: 'Reset Password' } },
-    { path: '/profile', name: 'userprofile', component: () => import('./views/Profile.vue'), meta: { title: 'User Profile' } },
-    { path: '*', name: '404', component: () => import('./views/FourohFour.vue'), meta: { title: '404 - Page Not Found' } },
-    {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: () => import('./views/Dashboard.vue'),
-      meta: { title: 'Dashboard' },
-      beforeEnter (to, from, next) {
-        if (store.state.user == null) {
-          firebase.auth().onAuthStateChanged((user) => {
-            user ? next() : next('/login')
-          })
-        } else { next() }
-      }
-    }
+    { path: '/dashboard', name: 'dashboard', component: () => import('./views/Dashboard.vue'), meta: { title: 'Dashboard' }, beforeEnter (to, from, next) { isLoggedin(next) } },
+    { path: '/profile/:username', name: 'userprofile', component: () => import('./views/Profile.vue'), meta: { title: 'User Profile' }, beforeEnter (to, from, next) { isLoggedin(next) }, props: true },
+    { path: '*', name: '404', component: () => import('./views/FourohFour.vue'), meta: { title: '404 - Page Not Found' } }
   ]
 })
 
@@ -40,5 +28,13 @@ router.beforeEach((to, from, next) => {
   if (store.state.navDrawer) { store.state.navDrawer = false }
   next()
 })
+
+const isLoggedin = (next) => {
+  if (store.state.user == null) {
+    firebase.auth().onAuthStateChanged((user) => {
+      user ? next() : next('/login')
+    })
+  } else { next() }
+}
 
 export default router

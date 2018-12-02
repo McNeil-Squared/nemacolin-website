@@ -18,6 +18,7 @@ import {
   VInput,
   VTextField,
   VTextarea,
+  VSelect,
   VAlert,
   transitions
 } from 'vuetify'
@@ -42,6 +43,7 @@ Vue.use(Vuetify, {
     VInput,
     VTextField,
     VTextarea,
+    VSelect,
     VAlert,
     transitions
   },
