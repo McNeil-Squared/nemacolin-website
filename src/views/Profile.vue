@@ -1,13 +1,13 @@
 <template lang="pug">
   v-layout(row wrap)
     v-flex(xs12 md4 offset-md4)
-      h3.text-xs-center User Profile
-      H4.text-xs-center.my-2 {{ userTitle }}
+      h2.text-xs-center.primary--text User Profile
+      h4.text-xs-center.my-2 {{ userTitle }}
       template(v-for="(item, key) in user")
         template(v-if="key !=='mailing' && key !=='physical'")
           template(v-if="item.type === 'input'")
             label(for="key") {{ item.label }}
-            v-text-field(v-model="user[key].value" :id="key" :error-messages="errors[key]" @input="validateField(key, item.label, user[key].validations)" solo)
+            v-text-field(v-model="user[key].value" :id="key" :error-messages="errors[key]" @input="validateField(key, item.label, user[key].validations)" solo :disabled="key==='userName'")
           template(v-else)
             label(for="key") {{ item.label }}
             v-select(v-model="user[key].value" :items="user[key].options" :label="user[key].label" solo append-icon="fas fa-sort-down")
@@ -114,6 +114,13 @@ export default {
           if (validation === 'phone' && !this.$v.user[field].value.phone) { this.errors[field].push(`${label} must be in this format: 123-456-7890.`) }
         })
       }
+    },
+    buildUsername () {
+      if (Object.keys(this.user).length !== 0) {
+        let wholeName = this.user.firstName.value + this.user.lastName.value
+        let filteredName = wholeName.split('').filter(letter => /[a-zA-Z0-9]/.test(letter)).join('')
+        return filteredName
+      }
     }
   },
   computed: {
@@ -122,6 +129,14 @@ export default {
         let ofOrFor = this.user.position.value === 'Support' || this.user.position.value === 'Council' || this.user.position.value === 'Vendor' ? 'for' : 'of'
         return `For ${this.user.firstName.value} ${this.user.lastName.value} - ${this.user.position.value} ${ofOrFor} Nemacolin Inc.`
       }
+    }
+  },
+  watch: {
+    'user.firstName.value': function () {
+      this.user.userName.value = this.buildUsername()
+    },
+    'user.lastName.value': function () {
+      this.user.userName.value = this.buildUsername()
     }
   },
   created () {
