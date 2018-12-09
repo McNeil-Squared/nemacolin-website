@@ -5,12 +5,13 @@
       h4.text-xs-center.my-2 {{ userTitle }}
       template(v-for="(item, key) in user")
         template(v-if="key !=='mailing' && key !=='physical'")
-          template(v-if="item.type === 'input'")
-            label(for="key") {{ item.label }}
-            v-text-field(v-model="user[key].value" :id="key" :error-messages="errors[key]" @input="validateField(key, item.label, user[key].validations)" solo :disabled="key==='userName'")
-          template(v-else)
-            label(for="key") {{ item.label }}
-            v-select(v-model="user[key].value" :items="user[key].options" :label="user[key].label" solo append-icon="fas fa-sort-down")
+          template(v-if="((key ==='username' || key === 'position' || key ==='role') && user.role.value === 'admin') || (key !=='username' || key !== 'position' || key !=='role')")
+            template(v-if="item.type === 'input'")
+              label(for="key") {{ item.label }}
+              v-text-field(v-model="user[key].value" :id="key" :error-messages="errors[key]" @input="validateField(key, item.label, user[key].validations)" solo :disabled="key==='userName'")
+            template(v-else)
+              label(for="key") {{ item.label }}
+              v-select(v-model="user[key].value" :items="user[key].options" :label="user[key].label" solo append-icon="fas fa-sort-down")
         template(v-else)
           template(v-for="(subitem,key2) in item")
             template(v-if="subitem.type === 'input'")
