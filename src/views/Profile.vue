@@ -36,7 +36,8 @@ export default {
   data () {
     return {
       user: {},
-      errors: []
+      errors: [],
+      userEmail: ''
     }
   },
   props: ['username'],
@@ -92,6 +93,7 @@ export default {
               role: { label: 'System Role', value: firebaseData.role, type: 'select', options: ['user', 'admin'], validations: ['required'] }
             }
             this.user = currentUser
+            this.userEmail = firebaseData.email
           })
         }).catch(error => console.log(error))
     },
@@ -136,6 +138,9 @@ export default {
         let ofOrFor = this.user.position.value === 'Support' || this.user.position.value === 'Council' || this.user.position.value === 'Vendor' ? 'for' : 'of'
         return `For ${this.user.firstName.value} ${this.user.lastName.value} - ${this.user.position.value} ${ofOrFor} Nemacolin Inc.`
       }
+    },
+    emailChanged () {
+      return this.user.email.value !== this.userEmail
     }
   },
   watch: {
