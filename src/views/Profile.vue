@@ -9,6 +9,7 @@
             template(v-if="item.type === 'input'")
               label(for="key") {{ item.label }}
               v-text-field(v-model="user[key].value" :id="key" :error-messages="errors[key]" @input="validateField(key, item.label, user[key].validations)" solo :disabled="key==='userName'")
+              v-alert.mb-4(:value="item.label === 'Email'" icon="fas fa-info-circle" type="info") Note: Your email address is used to login to the website, so if you change your email please remember to use the new email when you login.
             template(v-else)
               label(for="key") {{ item.label }}
               v-select(v-model="user[key].value" :items="user[key].options" :label="user[key].label" solo append-icon="fas fa-sort-down")
