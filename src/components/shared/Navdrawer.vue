@@ -14,19 +14,43 @@
             v-list-tile-title Home
       v-divider(light)
       v-expansion-panel
-          v-expansion-panel-content(expand-icon="fas fa-caret-down")
-            div(slot="header") {{ dropmenu.title }}
-            router-link.dense-menu(:to="item.link" tag="v-list-tile" active-class="active" v-for="item in dropmenu.submenu" :key="item.link" @click="toggleNavDrawer")
-              v-list-tile-content
-                v-list-tile-title {{ item.title }}
-    v-list(v-for='item in menu' :key='item.link')
-      router-link.dense-menu(:to="item.link" tag="v-list-tile" active-class="active")
+        v-expansion-panel-content(expand-icon="fas fa-caret-down")
+          div(slot="header") {{ dropmenu.title }}
+          router-link.dense-menu(:to="item.link" tag="v-list-tile" active-class="active" v-for="item in dropmenu.submenu" :key="item.link" @click="toggleNavDrawer")
+            v-list-tile-content
+              v-list-tile-title {{ item.title }}
+      router-link.dense-menu(:to="item.link" tag="v-list-tile" active-class="active" v-for="(item, i) in menu" :key="i")
         v-list-tile.dense-menu
           v-list-tile-content
             v-list-tile-title {{ item.title }}
+      router-link.dense-menu(to="/login" tag="v-list-tile" active-class="active" v-if="user == null")
+        v-list-tile.dense-menu
+          v-list-tile-content
+            v-list-tile-title Login
+      v-expansion-panel(v-else)
+        v-expansion-panel-content(expand-icon="fas fa-caret-down")
+          div(slot="header") Hello {{ user.displayName }}
+          router-link.dense-menu(to="/dashboard" tag="v-list-tile")
+            v-list-tile.dense-menu
+              v-list-tile-content
+                v-list-tile-title Dashboard
+          router-link.dense-menu(:to="profileLink" tag="v-list-tile")
+            v-list-tile.dense-menu
+              v-list-tile-content
+                v-list-tile-title User Profile
+          router-link.dense-menu(to="/users" tag="v-list-tile" v-if="user.role === 'admin'")
+            v-list-tile.dense-menu
+              v-list-tile-content
+                v-list-tile-title User Management
+          router-link.dense-menu(to="" tag="v-list-tile" @click="logout")
+            v-list-tile.dense-menu
+              v-list-tile-content
+                v-list-tile-title Logout
 </template>
 
 <script>
+import firebase from 'firebase'
+
 export default {
   data () {
     return {
@@ -45,15 +69,23 @@ export default {
         { link: '/info', title: 'Resident Info' },
         { link: '/faqs', title: 'FAQ\u2019s' },
         { link: '/contact', title: 'Contact' }
-        // { link: '/login', title: 'Login' }
       ]
     }
   },
   methods: {
-    toggleNavDrawer () { this.$store.dispatch('toggleDrawer') }
+    toggleNavDrawer () {
+      this.$store.dispatch('toggleDrawer')
+    },
+    logout (action) {
+      firebase.auth().signOut()
+        .then(this.$store.dispatch('removeUserSessionData'))
+        .catch(error => console.log(error))
+    }
   },
   computed: {
-    drawer () { return this.$store.getters.navDrawer }
+    drawer () { return this.$store.getters.navDrawer },
+    user () { return this.$store.getters.user },
+    profileLink () { return '/profile/' + this.user.username }
   },
   created () {
     // Set the width of the mobile menu to fullscreen.  Percent and vw values are not allowed.

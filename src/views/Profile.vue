@@ -13,12 +13,17 @@
             v-select(v-model="user[key].value" :items="user[key].options" :label="user[key].label" solo append-icon="fas fa-sort-down")
         template(v-else)
           template(v-for="(subitem,key2) in item")
-            label(for="key2") {{ subitem.label }}
-            v-text-field(v-model="item[key2].value" :id="key2" :error-messages="errors[key] ? errors[key][key2] : []" @input="validateField([key, key2], subitem.label, user[key][key2].validations)" solo)
+            template(v-if="subitem.type === 'input'")
+              label(for="key2") {{ subitem.label }}
+              v-text-field(v-model="item[key2].value" :id="key2" :error-messages="errors[key] ? errors[key][key2] : []" @input="validateField([key, key2], subitem.label, user[key][key2].validations)" solo)
+            template(v-else)
+              label(for="key2") {{ subitem.label }}
+              v-select(v-model="item[key2].value" :items="item[key2].options" item-text="label" item-value="value" :label="item[key2].label" solo append-icon="fas fa-sort-down")
 </template>
 
 <script>
 import firebase from '../firebase.js'
+import states from '../states.js'
 import { validationMixin } from 'vuelidate'
 import { required, email, numeric, minLength, maxLength, helpers } from 'vuelidate/lib/validators'
 /* eslint-disable no-useless-escape */
@@ -71,13 +76,13 @@ export default {
               mailing: {
                 address: { label: 'Mailing Address', value: firebaseData.mailing.address, type: 'input', validations: ['required', 'name'] },
                 city: { label: 'Mailing City', value: firebaseData.mailing.city, type: 'input', validations: ['required', 'name'] },
-                state: { label: 'Mailing State', value: firebaseData.mailing.state, type: 'input', validations: ['required'] },
+                state: { label: 'Mailing State', value: firebaseData.mailing.state, type: 'select', options: states, validations: ['required'] },
                 zip: { label: 'Mailing Zip Code', value: firebaseData.mailing.zip, type: 'input', validations: ['required', 'numeric', 'minLength', 'maxLength'] }
               },
               physical: {
                 address: { label: 'Physical Address', value: firebaseData.physical.address, type: 'input', validations: ['required', 'name'] },
                 city: { label: 'Physical City', value: firebaseData.physical.city, type: 'input', validations: ['required', 'name'] },
-                state: { label: 'Physical State', value: firebaseData.physical.state, type: 'input', validations: ['required'] },
+                state: { label: 'Physical State', value: firebaseData.physical.state, type: 'select', options: states, validations: ['required'] },
                 zip: { label: 'Physical Zip Code', value: firebaseData.physical.zip, type: 'input', validations: ['required', 'numeric', 'minLength', 'maxLength'] }
               },
               userName: { label: 'User Name', value: firebaseData.username, type: 'input', validations: ['required'] },
