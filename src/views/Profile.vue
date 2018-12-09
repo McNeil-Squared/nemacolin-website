@@ -2,25 +2,28 @@
   v-layout(row wrap)
     v-flex(xs12 md4 offset-md4)
       h3.text-xs-center User Profile
-      H4.text-xs-center For {{ user.firstName ? user.firstName.value : '' }} {{ user.lastName ? user.lastName.value : '' }} - {{ user.position ? user.position.value : '' }} {{ ofOrFor }} Nemacolin Inc.
+      H4.text-xs-center.my-2 {{ userTitle }}
       template(v-for="(item, key) in user")
         template(v-if="key !=='mailing' && key !=='physical'")
           template(v-if="item.type === 'input'")
             label(for="key") {{ item.label }}
-            v-text-field(v-model="user[key].value" :id="key" :error-messages="errors[key] || []" @input="validateField(key, user[key].validations)" solo)
+            v-text-field(v-model="user[key].value" :id="key" :error-messages="errors[key]" @input="validateField(key, item.label, user[key].validations)" solo)
           template(v-else)
             label(for="key") {{ item.label }}
             v-select(v-model="user[key].value" :items="user[key].options" :label="user[key].label" solo append-icon="fas fa-sort-down")
         template(v-else)
           template(v-for="(subitem,key2) in item")
             label(for="key2") {{ subitem.label }}
-            v-text-field(v-model="item[key2].value" :id="key2" :error-messages="errors[key] ? errors[key][key2] : []" @input="validateField([key, key2], user[key][key2].validations)" solo)
+            v-text-field(v-model="item[key2].value" :id="key2" :error-messages="errors[key] ? errors[key][key2] : []" @input="validateField([key, key2], subitem.label, user[key][key2].validations)" solo)
 </template>
 
 <script>
 import firebase from '../firebase.js'
 import { validationMixin } from 'vuelidate'
-import { required, email, numeric, minLength, maxLength } from 'vuelidate/lib/validators'
+import { required, email, numeric, minLength, maxLength, helpers } from 'vuelidate/lib/validators'
+/* eslint-disable no-useless-escape */
+const name = helpers.regex('name', /^[a-zA-Z 0-9\.\,\-]*$/)
+const phone = helpers.regex('phone', /^[0-9]{3}\-[0-9]{3}\-[0-9]{4}$/)
 
 export default {
   data () {
@@ -34,18 +37,18 @@ export default {
   validations: {
     user: {
       email: { value: { required, email } },
-      firstName: { value: { required } },
-      lastName: { value: { required } },
-      phone: { value: { required } },
+      firstName: { value: { required, name } },
+      lastName: { value: { required, name } },
+      phone: { value: { required, phone } },
       mailing: {
-        address: { value: { required } },
-        city: { value: { required } },
+        address: { value: { required, name } },
+        city: { value: { required, name } },
         state: { value: { required } },
         zip: { value: { required, numeric, minLength: minLength(5), maxLength: maxLength(5) } }
       },
       physical: {
-        address: { value: { required } },
-        city: { value: { required } },
+        address: { value: { required, name } },
+        city: { value: { required, name } },
         state: { value: { required } },
         zip: { value: { required, numeric, minLength: minLength(5), maxLength: maxLength(5) } }
       },
@@ -62,18 +65,18 @@ export default {
             let firebaseData = doc.data()
             let currentUser = {
               email: { label: 'Email', value: firebaseData.email, type: 'input', validations: ['required', 'email'] },
-              firstName: { label: 'First Name', value: firebaseData.firstName, type: 'input', validations: ['required'] },
-              lastName: { label: 'Last Name', value: firebaseData.lastName, type: 'input', validations: ['required'] },
-              phone: { label: 'Phone Number', value: firebaseData.phone, type: 'input', validations: ['required'] },
+              firstName: { label: 'First Name', value: firebaseData.firstName, type: 'input', validations: ['required', 'name'] },
+              lastName: { label: 'Last Name', value: firebaseData.lastName, type: 'input', validations: ['required', 'name'] },
+              phone: { label: 'Phone Number', value: firebaseData.phone, type: 'input', validations: ['required', 'phone'] },
               mailing: {
-                address: { label: 'Mailing Address', value: firebaseData.mailing.address, type: 'input', validations: ['required'] },
-                city: { label: 'Mailing City', value: firebaseData.mailing.city, type: 'input', validations: ['required'] },
+                address: { label: 'Mailing Address', value: firebaseData.mailing.address, type: 'input', validations: ['required', 'name'] },
+                city: { label: 'Mailing City', value: firebaseData.mailing.city, type: 'input', validations: ['required', 'name'] },
                 state: { label: 'Mailing State', value: firebaseData.mailing.state, type: 'input', validations: ['required'] },
                 zip: { label: 'Mailing Zip Code', value: firebaseData.mailing.zip, type: 'input', validations: ['required', 'numeric', 'minLength', 'maxLength'] }
               },
               physical: {
-                address: { label: 'Physical Address', value: firebaseData.physical.address, type: 'input', validations: ['required'] },
-                city: { label: 'Physical City', value: firebaseData.physical.city, type: 'input', validations: ['required'] },
+                address: { label: 'Physical Address', value: firebaseData.physical.address, type: 'input', validations: ['required', 'name'] },
+                city: { label: 'Physical City', value: firebaseData.physical.city, type: 'input', validations: ['required', 'name'] },
                 state: { label: 'Physical State', value: firebaseData.physical.state, type: 'input', validations: ['required'] },
                 zip: { label: 'Physical Zip Code', value: firebaseData.physical.zip, type: 'input', validations: ['required', 'numeric', 'minLength', 'maxLength'] }
               },
@@ -85,34 +88,39 @@ export default {
           })
         }).catch(error => console.log(error))
     },
-    validateField (field, validations) {
+    validateField (field, label, validations) {
       if (typeof field === 'object') {
         this.$v.user[field[0]][field[1]].$touch()
         if (!this.errors[field[0]]) { this.errors[field[0]] = {}; this.errors[field[0]][field[1]] = [] } else { this.errors[field[0]][field[1]] = [] }
         validations.forEach((validation) => {
-          if (validation === 'required' && !this.$v.user[field[0]][field[1]].value.required) { this.errors[field[0]][field[1]].push(`${field[0]} ${field[1]} is required.`) }
-          if (validation === 'email' && !this.$v.user[field[0]][field[1]].value.email) { this.errors[field[0]][field[1]].push(`please enter a valid email.`) }
-          if (validation === 'numeric' && !this.$v.user[field[0]][field[1]].value.numeric) { this.errors[field[0]][field[1]].push(`${field[0]} ${field[1]} must be numbers only.`) }
-          if (validation === 'minLength' && !this.$v.user[field[0]][field[1]].value.minLength) { this.errors[field[0]][field[1]].push(`${field[0]} ${field[1]} must be 5 characters long.`) }
-          if (validation === 'maxLength' && !this.$v.user[field[0]][field[1]].value.maxLength) { this.errors[field[0]][field[1]].push(`${field[0]} ${field[1]} must be 5 characters long.`) }
+          if (validation === 'required' && !this.$v.user[field[0]][field[1]].value.required) { this.errors[field[0]][field[1]].push(`${label} is required.`) }
+          if (validation === 'email' && !this.$v.user[field[0]][field[1]].value.email) { this.errors[field[0]][field[1]].push(`please enter a valid ${label}.`) }
+          if (validation === 'numeric' && !this.$v.user[field[0]][field[1]].value.numeric) { this.errors[field[0]][field[1]].push(`${label} must be numbers only.`) }
+          if (validation === 'minLength' && !this.$v.user[field[0]][field[1]].value.minLength) { this.errors[field[0]][field[1]].push(`${label} must be 5 characters long.`) }
+          if (validation === 'maxLength' && !this.$v.user[field[0]][field[1]].value.maxLength) { this.errors[field[0]][field[1]].push(`${label} must be 5 characters long.`) }
+          if (validation === 'name' && !this.$v.user[field[0]][field[1]].value.name) { this.errors[field[0]][field[1]].push(`${label} can only contain letters, numbers, spaces, commas, or periods.`) }
+          if (validation === 'phone' && !this.$v.user[field[0]][field[1]].value.phone) { this.errors[field[0]][field[1]].push(`${label} must be in this format: 123-456-7890.`) }
         })
       } else {
         this.$v.user[field].$touch()
         this.errors[field] = []
         validations.forEach((validation) => {
-          if (validation === 'required' && !this.$v.user[field].value.required) { this.errors[field].push(`${field} is required.`) }
-          if (validation === 'email' && !this.$v.user[field].value.email) { this.errors[field].push(`please enter a valid email.`) }
-          if (validation === 'numeric' && !this.$v.user[field].value.numeric) { this.errors[field].push(`${field} must be numbers only.`) }
-          if (validation === 'minLength' && !this.$v.user[field].value.minLength) { this.errors[field].push(`${field} must be 5 characters long.`) }
-          if (validation === 'maxLength' && !this.$v.user[field].value.maxLength) { this.errors[field].push(`${field} must be 5 characters long.`) }
+          if (validation === 'required' && !this.$v.user[field].value.required) { this.errors[field].push(`${label} is required.`) }
+          if (validation === 'email' && !this.$v.user[field].value.email) { this.errors[field].push(`Please enter a valid ${label}.`) }
+          if (validation === 'numeric' && !this.$v.user[field].value.numeric) { this.errors[field].push(`${label} must be numbers only.`) }
+          if (validation === 'minLength' && !this.$v.user[field].value.minLength) { this.errors[field].push(`${label} must be 5 characters long.`) }
+          if (validation === 'maxLength' && !this.$v.user[field].value.maxLength) { this.errors[field].push(`${label} must be 5 characters long.`) }
+          if (validation === 'name' && !this.$v.user[field].value.name) { this.errors[field].push(`${label} can only contain letters, numbers, spaces, commas, or periods.`) }
+          if (validation === 'phone' && !this.$v.user[field].value.phone) { this.errors[field].push(`${label} must be in this format: 123-456-7890.`) }
         })
       }
     }
   },
   computed: {
-    ofOrFor () {
-      if (this.user.position) {
-        return this.user.position.value === 'Support' || this.user.position.value === 'Council' || this.user.position.value === 'Vendor' ? 'for' : 'of'
+    userTitle () {
+      if (Object.keys(this.user).length !== 0) {
+        let ofOrFor = this.user.position.value === 'Support' || this.user.position.value === 'Council' || this.user.position.value === 'Vendor' ? 'for' : 'of'
+        return `For ${this.user.firstName.value} ${this.user.lastName.value} - ${this.user.position.value} ${ofOrFor} Nemacolin Inc.`
       }
     }
   },
