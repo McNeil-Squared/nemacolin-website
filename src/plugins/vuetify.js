@@ -20,6 +20,7 @@ import {
   VTextarea,
   VSelect,
   VAlert,
+  VDialog,
   transitions
 } from 'vuetify'
 import 'vuetify/src/stylus/app.styl'
@@ -45,6 +46,7 @@ Vue.use(Vuetify, {
     VTextarea,
     VSelect,
     VAlert,
+    VDialog,
     transitions
   },
   theme: {
