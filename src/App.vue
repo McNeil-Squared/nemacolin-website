@@ -38,4 +38,5 @@ export default {
   html { overflow-y: auto; }
   img:not(.nemacolin-avatar) { max-width: 100%; }
   a { text-decoration: none; }
+  .v-dialog--active { background-color: #fff; }
 </style>

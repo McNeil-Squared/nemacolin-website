@@ -19,6 +19,7 @@ const router = new Router({
     { path: '/resetpassword', name: 'resetpassword', component: () => import('./views/Reset.vue'), meta: { title: 'Reset Password' } },
     { path: '/dashboard', name: 'dashboard', component: () => import('./views/Dashboard.vue'), meta: { title: 'Dashboard' }, beforeEnter (to, from, next) { isLoggedin(next) } },
     { path: '/profile/:username', name: 'userprofile', component: () => import('./views/Profile.vue'), meta: { title: 'User Profile' }, beforeEnter (to, from, next) { isLoggedin(next) }, props: true },
+    { path: '/users', name: 'usermanagement', component: () => import('./views/Users.vue'), meta: { title: 'User Management' }, beforeEnter (to, from, next) { isLoggedin(next) } },
     { path: '*', name: '404', component: () => import('./views/FourohFour.vue'), meta: { title: '404 - Page Not Found' } }
   ]
 })
