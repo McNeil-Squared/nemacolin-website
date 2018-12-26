@@ -11,7 +11,7 @@
             template(v-if="((key ==='username' || key === 'position' || key ==='role') && user.role.value === 'admin') || (key !=='username' || key !== 'position' || key !=='role')")
               template(v-if="item.type === 'input'")
                 label(for="key") {{ item.label }}
-                v-text-field(v-model="user[key].value" :id="key" :error-messages="errors[key]" @input="validateField(key, item.label, user[key].validations)" solo :disabled="key==='userName'")
+                v-text-field(v-model="user[key].value" :id="key" :error-messages="errors[key]" @input="validateField(key, item.label, user[key].validations)" solo :disabled="key==='username'")
                 v-alert.mb-4(:value="item.label === 'Email'" icon="fas fa-info-circle" type="info") Note: Your email address is used to login to the website, so if you change your email please remember to use your new email when you login.
               template(v-else)
                 label(for="key") {{ item.label }}
@@ -55,6 +55,7 @@ export default {
       user: {},
       errors: [],
       currentUserEmail: '',
+      currentUserUsername: '',
       sending: false,
       status: 'pending',
       updatedUserdata: {},
@@ -86,7 +87,7 @@ export default {
         state: { value: { required } },
         zip: { value: { required, numeric, minLength: minLength(5), maxLength: maxLength(5) } }
       },
-      userName: { value: { required } },
+      username: { value: { required } },
       position: { value: { required } },
       role: { value: { required } }
     },
@@ -115,12 +116,13 @@ export default {
                 state: { label: 'Physical State', value: firebaseData.physical.state, type: 'select', options: states, validations: ['required'] },
                 zip: { label: 'Physical Zip Code', value: firebaseData.physical.zip, type: 'input', validations: ['required', 'numeric', 'minLength', 'maxLength'] }
               },
-              userName: { label: 'User Name', value: firebaseData.username, type: 'input', validations: ['required'] },
+              username: { label: 'User Name', value: firebaseData.username, type: 'input', validations: ['required'] },
               position: { label: 'Position', value: firebaseData.position, type: 'select', options: ['President', 'Vice-President', 'Secretary', 'Treasurer', 'Member', 'Support', 'Council', 'Vendor'], validations: ['required'] },
               role: { label: 'System Role', value: firebaseData.role, type: 'select', options: ['user', 'admin'], validations: ['required'] }
             }
             this.user = currentUser
             this.currentUserEmail = firebaseData.email
+            this.currentUserUsername = firebaseData.username
             this.loading = false
           })
         }).catch(error => console.log(error))
@@ -139,48 +141,56 @@ export default {
             this.updatedUserdata[item] = this.user[item].value
           }
         }
-        if (this.emailChanged) {
-          this.updateEmail(this.updatedUserdata)
-        } else {
-          firebase.firestore().collection('users').doc(this.$store.getters.user.uid).update(this.updatedUserdata)
-            .then(() => {
-              this.status = 'success'
-              this.sending = false
-            }).catch((error) => {
-              console.log('database update error: ', error)
-              this.status = 'error'
-              this.sending = false
-            })
-        }
+        if (this.emailChanged || this.usernameChanged) {
+          this.updateAuthdata(this.updatedUserdata)
+        } else { this.updateDatabase(this.updatedUserdata) }
       }
     },
-    updateEmail (updatedUserdata) {
-      let currentUser = firebase.auth().currentUser
-      currentUser.updateEmail(updatedUserdata.email)
+    updateDatabase (updatedUserdata) {
+      firebase.firestore().collection('users').doc(this.$store.getters.user.uid).update(this.updatedUserdata)
         .then(() => {
-          currentUser.sendEmailVerification()
-            .then(() => {
-              firebase.firestore().collection('users').doc(this.$store.getters.user.uid).update(updatedUserdata)
-                .then(() => {
-                  this.status = 'success'
-                  this.emailUpdated = true
-                  this.sending = false
-                }).catch((error) => {
-                  console.log('database update error: ', error)
-                  this.status = 'error'
-                  this.sending = false
-                })
-            }).catch((error) => {
-              console.log('verification email error: ', error)
-              this.status = 'error'
-              this.sending = false
-            })
+          this.status = 'success'
+          this.sending = false
+          if (this.usernameChanged) { window.history.pushState({ newUsername: this.updatedUserdata.username }, 'User Profile', this.updatedUserdata.username) }
         }).catch((error) => {
-          console.log('email update error: ', error)
-          if (error.code === 'auth/requires-recent-login') {
-            this.showPasswordModal = true
-          }
+          console.log('database update error: ', error)
+          this.status = 'error'
+          this.sending = false
         })
+    },
+    updateAuthdata (updatedUserdata) {
+      let currentUser = firebase.auth().currentUser
+      if (this.usernameChanged) {
+        currentUser.updateProfile({ displayName: `${updatedUserdata.firstName} ${updatedUserdata.lastName}` })
+          .then(() => {
+            if (!this.emailChanged) {
+              this.updateDatabase(updatedUserdata)
+            }
+          }).catch((error) => {
+            console.log('username update error: ', error)
+            this.status = 'error'
+            this.sending = false
+          })
+      }
+      if (this.emailChanged) {
+        currentUser.updateEmail(updatedUserdata.email)
+          .then(() => {
+            currentUser.sendEmailVerification()
+              .then(() => {
+                this.emailUpdated = true
+                this.updateDatabase(updatedUserdata)
+              }).catch((error) => {
+                console.log('verification email error: ', error)
+                this.status = 'error'
+                this.sending = false
+              })
+          }).catch((error) => {
+            console.log('email update error: ', error)
+            if (error.code === 'auth/requires-recent-login') {
+              this.showPasswordModal = true
+            }
+          })
+      }
     },
     reauthenticate (email, password, updatedUserdata) {
       this.sendingPassword = true
@@ -249,14 +259,17 @@ export default {
     },
     emailChanged () {
       return this.user.email.value !== this.currentUserEmail
+    },
+    usernameChanged () {
+      return this.user.username.value !== this.currentUserUsername
     }
   },
   watch: {
     'user.firstName.value': function () {
-      this.user.userName.value = this.buildUsername()
+      this.user.username.value = this.buildUsername()
     },
     'user.lastName.value': function () {
-      this.user.userName.value = this.buildUsername()
+      this.user.username.value = this.buildUsername()
     }
   },
   created () {
