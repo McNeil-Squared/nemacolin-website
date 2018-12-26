@@ -46,6 +46,7 @@ export default new Vuex.Store({
             let userData = {
               displayName: user.displayName,
               uid: user.uid,
+              verified: user.emailVerified,
               username: currentUser.username,
               role: currentUser.role
             }

@@ -1,42 +1,44 @@
 <template lang="pug">
-  v-layout(row wrap)
-    v-flex(xs12 md4 offset-md4)
-      h2.text-xs-center.primary--text User Profile
-      div.text-xs-center.my-2(v-if="loading")
-        v-icon.loading fas fa-sync
-      form(@submit.prevent="submit" v-if="!loading")
-        h4.text-xs-center.my-2 {{ userTitle }}
-        template(v-for="(item, key) in user")
-          template(v-if="key !=='mailing' && key !=='physical'")
-            template(v-if="((key ==='username' || key === 'position' || key ==='role') && user.role.value === 'admin') || (key !=='username' || key !== 'position' || key !=='role')")
-              template(v-if="item.type === 'input'")
-                label(for="key") {{ item.label }}
-                v-text-field(v-model="user[key].value" :id="key" :error-messages="errors[key]" @input="validateField(key, item.label, user[key].validations)" solo :disabled="key==='username'")
-                v-alert.mb-4(:value="item.label === 'Email'" icon="fas fa-info-circle" type="info") Note: Your email address is used to login to the website, so if you change your email please remember to use your new email when you login.
-              template(v-else)
-                label(for="key") {{ item.label }}
-                v-select(v-model="user[key].value" :items="user[key].options" :label="user[key].label" solo append-icon="fas fa-sort-down")
-          template(v-else)
-            template(v-for="(subitem,key2) in item")
-              template(v-if="subitem.type === 'input'")
-                label(for="key2") {{ subitem.label }}
-                v-text-field(v-model="item[key2].value" :id="key2" :error-messages="errors[key] ? errors[key][key2] : []" @input="validateField([key, key2], subitem.label, user[key][key2].validations)" solo)
-              template(v-else)
-                label(for="key2") {{ subitem.label }}
-                v-select(v-model="item[key2].value" :items="item[key2].options" item-text="label" item-value="value" :label="item[key2].label" solo append-icon="fas fa-sort-down")
-        div.text-xs-center
-          v-btn(v-if="status !== 'success'" @click="submit" color="primary" :loading="sending" :disabled="sending || $v.$invalid") Submit
-      v-alert(v-if="status === 'success' && !sending" type="success" icon="fas fa-check" value="true") Success!&nbsp;&nbsp;Your profile has been updated.
-      v-alert(v-if="status === 'success' && emailUpdated && !sending" type="success" icon="fas fa-check" value="true") Success!&nbsp;&nbsp;Your email address has been updated.&nbsp;&nbsp;Please check your new email for a verification message.&nbsp;&nbsp;You must verify your new email address before continuing.
-      v-alert(v-if="status === 'error' && !sending" type="error" icon="fas fa-times" value="true") Bummer!&nbsp;&nbsp;There was an error and your profile was not updated.&nbsp;&nbsp;Please try again.&nbsp;&nbsp;If you see this message again, please #[a(href="mailto:info@nemacolininc.com") email us] and let us know.
-      v-dialog(v-model="showPasswordModal" persistant width="400")
-        form.pa-3(@submit.prevent="submit" autocomplete="on")
-          h4.mt-2.mb-4.text-xs-left Hello, It looks like you haven't logged in for awhile.&nbsp;&nbsp;Please re-enter your password to complete the update.
-          label.d-block.text-xs-left(for="password") Password
-          v-text-field#password(v-model="password"  placeholder="Password" :error-messages="errors['password']" @input="validateField('password', 'Password', passwordValidations)" solo type="password")
-          v-btn(v-if="status != 'success'" @click="reauthenticate(currentUserEmail, password, updatedUserdata)" color="primary" :loading="sendingPassword" :disabled="sendingPassword") Submit
-          v-alert(v-if="showPasswordError && !sendingPassword" type="error" icon="fas fa-times" value="true") Incorrect password.
-          router-link.mt-3.link(tag="p" to="/resetpassword") I forgot my password.
+  div
+    app-EmailVerification.text-xs-center.mb-3
+    v-layout(row wrap)
+      v-flex(xs12 md4 offset-md4)
+        h2.text-xs-center.primary--text User Profile
+        div.text-xs-center.my-2(v-if="loading")
+          v-icon.loading fas fa-sync
+        form(@submit.prevent="submit" v-if="!loading")
+          h4.text-xs-center.my-2 {{ userTitle }}
+          template(v-for="(item, key) in user")
+            template(v-if="key !=='mailing' && key !=='physical'")
+              template(v-if="((key ==='username' || key === 'position' || key ==='role') && user.role.value === 'admin') || (key !=='username' || key !== 'position' || key !=='role')")
+                template(v-if="item.type === 'input'")
+                  label(for="key") {{ item.label }}
+                  v-text-field(v-model="user[key].value" :id="key" :error-messages="errors[key]" @input="validateField(key, item.label, user[key].validations)" solo :disabled="key==='username'")
+                  v-alert.mb-4(:value="item.label === 'Email'" icon="fas fa-info-circle" type="info") Note: Your email address is used to login to the website, so if you change your email please remember to use your new email when you login.
+                template(v-else)
+                  label(for="key") {{ item.label }}
+                  v-select(v-model="user[key].value" :items="user[key].options" :label="user[key].label" solo append-icon="fas fa-sort-down")
+            template(v-else)
+              template(v-for="(subitem,key2) in item")
+                template(v-if="subitem.type === 'input'")
+                  label(for="key2") {{ subitem.label }}
+                  v-text-field(v-model="item[key2].value" :id="key2" :error-messages="errors[key] ? errors[key][key2] : []" @input="validateField([key, key2], subitem.label, user[key][key2].validations)" solo)
+                template(v-else)
+                  label(for="key2") {{ subitem.label }}
+                  v-select(v-model="item[key2].value" :items="item[key2].options" item-text="label" item-value="value" :label="item[key2].label" solo append-icon="fas fa-sort-down")
+          div.text-xs-center
+            v-btn(v-if="status !== 'success'" @click="submit" color="primary" :loading="sending" :disabled="sending || $v.$invalid") Submit
+        v-alert(v-if="status === 'success' && !sending" type="success" icon="fas fa-check" value="true") Success!&nbsp;&nbsp;Your profile has been updated.
+        v-alert(v-if="status === 'success' && emailUpdated && !sending" type="success" icon="fas fa-check" value="true") Success!&nbsp;&nbsp;Your email address has been updated.&nbsp;&nbsp;Please check your new email for a verification message.&nbsp;&nbsp;You must verify your new email address before continuing.
+        v-alert(v-if="status === 'error' && !sending" type="error" icon="fas fa-times" value="true") Bummer!&nbsp;&nbsp;There was an error and your profile was not updated.&nbsp;&nbsp;Please try again.&nbsp;&nbsp;If you see this message again, please #[a(href="mailto:info@nemacolininc.com") email us] and let us know.
+        v-dialog(v-model="showPasswordModal" persistant width="400")
+          form.pa-3(@submit.prevent="submit" autocomplete="on")
+            h4.mt-2.mb-4.text-xs-left Hello, It looks like you haven't logged in for awhile.&nbsp;&nbsp;Please re-enter your password to complete the update.
+            label.d-block.text-xs-left(for="password") Password
+            v-text-field#password(v-model="password"  placeholder="Password" :error-messages="errors['password']" @input="validateField('password', 'Password', passwordValidations)" solo type="password")
+            v-btn(v-if="status != 'success'" @click="reauthenticate(currentUserEmail, password, updatedUserdata)" color="primary" :loading="sendingPassword" :disabled="sendingPassword") Submit
+            v-alert(v-if="showPasswordError && !sendingPassword" type="error" icon="fas fa-times" value="true") Incorrect password.
+            router-link.mt-3.link(tag="p" to="/resetpassword") I forgot my password.
 </template>
 
 <script>
@@ -44,6 +46,7 @@ import firebase from '../firebase.js'
 import states from '../states.js'
 import { validationMixin } from 'vuelidate'
 import { required, requiredIf, email, numeric, minLength, maxLength, helpers } from 'vuelidate/lib/validators'
+import EmailVerification from '../components/EmailVerification'
 /* eslint-disable no-useless-escape */
 const name = helpers.regex('name', /^[a-zA-Z 0-9\.\,\-]*$/)
 const phone = helpers.regex('phone', /^[0-9]{3}\-[0-9]{3}\-[0-9]{4}$/)
@@ -68,6 +71,7 @@ export default {
     }
   },
   props: ['username'],
+  components: { appEmailVerification: EmailVerification },
   mixins: [validationMixin],
   validations: {
     user: {
