@@ -1,10 +1,13 @@
 <template lang="pug">
   div
+    h2.text-xs-center.primary--text User Management
+    div.text-xs-center.my-2(v-if="loading")
+      v-icon.loading fas fa-sync
     v-layout(row wrap)
       v-flex(xs12 md4)
-        v-btn(fab fixed bottom right color="primary")
+        v-btn(fab fixed bottom right color="primary" @click="addUser = !addUser")
           v-icon fas fa-plus
-        v-card(v-for="(user, i) in users" :key="i")
+        v-card(v-for="(user, i) in users" :key="i" v-if="!loading")
           v-card-title.pb-0(primary title)
             div.full-width.text-xs-center.mb-3
               h3.headline.mb-0.mx-auto {{ user.firstName }} {{ user.lastName }}
@@ -20,7 +23,7 @@
             v-btn(color="primary" @click="deleteUser(user)") Delete User
     v-layout(row wrap)
       v-flex(xs12 md4 offset-md4)
-        v-dialog(v-model="addUser" width="400")
+        v-dialog(v-model="addUser" :width="width")
           form.pa-3(@submit.prevent="submit" v-if="!loading")
             h4.text-xs-center.my-2 Add User
             template(v-for="(item, key) in addUsers")
@@ -45,11 +48,12 @@
                     label(for="key2") {{ subitem.label }}
                     v-select(v-model="item[key2].value" :items="item[key2].options" item-text="label" item-value="value" :label="item[key2].label" solo append-icon="fas fa-sort-down")
             div.text-xs-center
-              //- v-btn(v-if="status !== 'success'" @click="submit" color="primary" :loading="sending" :disabled="sending || $v.$invalid") Submit
+              v-btn(v-if="status !== 'success'" @click="submit" color="primary" :loading="sending" :disabled="sending || $v.$invalid") Submit
 </template>
 
 <script>
 import firebase from '../firebase.js'
+// import admin from '../firebaseAdmin.js'
 import states from '../states.js'
 import { validationMixin } from 'vuelidate'
 import { required, sameAs, email, numeric, minLength, maxLength, helpers } from 'vuelidate/lib/validators'
@@ -62,11 +66,13 @@ export default {
   data () {
     return {
       loading: true,
+      width: 500,
       users: [],
       errors: [],
       sending: false,
       status: 'pending',
-      addUser: true,
+      newUserData: {},
+      addUser: false,
       addUsers: {
         email: { label: 'Email', value: '', type: 'input', validations: ['required', 'email'] },
         password: { label: 'Password', value: '', type: 'input', validations: ['required', 'password'] },
@@ -178,6 +184,37 @@ export default {
         let filteredName = wholeName.split('').filter(letter => /[a-zA-Z0-9]/.test(letter)).join('')
         return filteredName
       }
+    },
+    submit () {
+      if (!this.$v.$invalid) {
+        this.sending = true
+        for (let item in this.addUsers) {
+          if (item === 'mailing' || item === 'physical') {
+            if (!this.newUserData['mailing']) { this.newUserData['mailing'] = {} }
+            if (!this.newUserData['physical']) { this.newUserData['physical'] = {} }
+            for (let subitem in this.addUsers[item]) {
+              this.newUserData[item][subitem] = this.addUsers[item][subitem].value
+            }
+          } else {
+            this.newUserData[item] = this.addUsers[item].value
+          }
+        }
+        // let userData = {
+        //   email: this.newUserData.email,
+        //   emailVerified: false,
+        //   password: this.addUsers.password.value,
+        //   displayName: `${this.newUserData.firstName} ${this.newUserData.lastName}`
+        // }
+        // admin.auth().createUser(userData)
+        //   .then((userRecord) => {
+        //     console.log(userRecord)
+        //   })
+        //   .catch((error) => {
+        //     console.log('add user error: ', error)
+        //     this.status = 'error'
+        //     this.sending = false
+        //   })
+      }
     }
   },
   watch: {
@@ -188,7 +225,11 @@ export default {
       this.addUsers.username.value = this.buildUsername()
     }
   },
-  created () { this.getUsers() }
+  created () {
+    this.getUsers()
+    // Set the width of the add users modal to 90% of screen width on screens less than 500px.  Percent and vw values are not allowed.
+    if (window.innerwidth < 500) this.width = window.innerWidth * 0.9
+  }
 }
 </script>
 
