@@ -37,7 +37,9 @@ app.use(cors({ origin: true }));
 
 // build multiple CRUD interfaces:
 
-app.post('/', (req, res) => {
+//contact form
+
+app.post('/contact', (req, res) => {
   if (req.body.apiKey === apiKey) {
     const name = req.body.name
     const email = req.body.email

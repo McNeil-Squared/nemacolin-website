@@ -22,3 +22,4 @@ yarn-error.log*
 .env
 .runtimeconfig.json
 firebase-debug.log
+serviceAccountKey.json
