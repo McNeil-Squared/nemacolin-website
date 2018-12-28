@@ -2,22 +2,34 @@ const functions = require('firebase-functions');
 const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer')
+// const admin = require('firebase-admin')
 
-// development
-// require('./.env')
+
+// development variables
+// require('./env.js')
 // const gmailEmail = process.env.email
 // const gmailPassword = process.env.password
 // const apiKey = process.env.apikey
+// const private_key = process.env.privateKey.replace(/\\n/g, '\n')
+// const client_email = process.env.clientEmail
 
-// Configure the email transport using the default SMTP transport and a GMail account.
-// For Gmail, enable these:
-// 1. https://www.google.com/settings/security/lesssecureapps
-// 2. https://accounts.google.com/DisplayUnlockCaptcha
-// For other types of transports such as Sendgrid see https://nodemailer.com/transports/
-// TODO: Configure the `gmail.email` and `gmail.password` Google Cloud environment variables.
+// production variables
 const gmailEmail = functions.config().gmail.email
 const gmailPassword = functions.config().gmail.password
 const apiKey = functions.config().contact.apikey
+// const private_key = functions.config().firebaseauth.privateKey
+// const client_email = functions.config().firebaseauth.clientEmail
+
+// initialize firebase admin
+
+// const config = {
+//   credential: admin.credential.cert({ private_key, client_email }),
+//   databaseURL: 'https://nemacolin-website.firebaseio.com'
+// }
+
+// admin.initializeApp({ config })
+
+// send emails with Nodemailer
 
 const mailTransport = nodemailer.createTransport({
   service: 'gmail',
@@ -101,6 +113,25 @@ app.post('/', (req, res) => {
     return res.status(400).send('incorrect or missing api key')
   }
 });
+
+// app.post('/adduser', (req, res) => {
+
+//   let userData = {
+//     email: req.body.email,
+//     emailVerified: req.body.emailVerified,
+//     password: req.body.password,
+//     displayName: `${req.body.firstName} ${req.body.lastName}`
+//   }
+
+//   admin.auth().createUser(userData)
+//     .then((userRecord) => {
+//       return res.send(userRecord)
+//     })
+//     .catch((error) => {
+//       console.log('add user error: ', error)
+//       return res.send(error)
+//     })
+// })
 
 // Expose Express API as a single Cloud Function:
 exports.widgets = functions.https.onRequest(app);

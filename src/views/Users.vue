@@ -53,7 +53,7 @@
 
 <script>
 import firebase from '../firebase.js'
-// import admin from '../firebaseAdmin.js'
+import axios from 'axios'
 import states from '../states.js'
 import { validationMixin } from 'vuelidate'
 import { required, sameAs, email, numeric, minLength, maxLength, helpers } from 'vuelidate/lib/validators'
@@ -199,21 +199,23 @@ export default {
             this.newUserData[item] = this.addUsers[item].value
           }
         }
-        // let userData = {
-        //   email: this.newUserData.email,
-        //   emailVerified: false,
-        //   password: this.addUsers.password.value,
-        //   displayName: `${this.newUserData.firstName} ${this.newUserData.lastName}`
-        // }
-        // admin.auth().createUser(userData)
-        //   .then((userRecord) => {
-        //     console.log(userRecord)
-        //   })
-        //   .catch((error) => {
-        //     console.log('add user error: ', error)
-        //     this.status = 'error'
-        //     this.sending = false
-        //   })
+        let userData = {
+          email: this.newUserData.email,
+          emailVerified: false,
+          password: this.addUsers.password.value,
+          displayName: `${this.newUserData.firstName} ${this.newUserData.lastName}`
+        }
+        axios.post('https://us-central1-nemacolin-website.cloudfunctions.net/widgets/', userData)
+          .then(res => {
+            res.status === 200 ? this.status = 'success' : this.status = 'fail'
+            this.sending = false
+            this.clear()
+          })
+          .catch(error => {
+            console.log(error)
+            this.status = 'fail'
+            this.sending = false
+          })
       }
     }
   },
