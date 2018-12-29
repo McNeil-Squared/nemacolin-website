@@ -2,32 +2,32 @@ const functions = require('firebase-functions');
 const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer')
-// const admin = require('firebase-admin')
+const admin = require('firebase-admin')
 
 
 // development variables
-// require('./env.js')
-// const gmailEmail = process.env.email
-// const gmailPassword = process.env.password
-// const apiKey = process.env.apikey
-// const private_key = process.env.privateKey.replace(/\\n/g, '\n')
-// const client_email = process.env.clientEmail
+require('./env.js')
+const gmailEmail = process.env.email
+const gmailPassword = process.env.password
+const apiKey = process.env.apikey
+const private_key = process.env.privateKey.replace(/\\n/g, '\n')
+const client_email = process.env.clientEmail
 
 // production variables
-const gmailEmail = functions.config().gmail.email
-const gmailPassword = functions.config().gmail.password
-const apiKey = functions.config().contact.apikey
+// const gmailEmail = functions.config().gmail.email
+// const gmailPassword = functions.config().gmail.password
+// const apiKey = functions.config().contact.apikey
 // const private_key = functions.config().firebaseauth.privateKey
 // const client_email = functions.config().firebaseauth.clientEmail
 
 // initialize firebase admin
 
-// const config = {
-//   credential: admin.credential.cert({ private_key, client_email }),
-//   databaseURL: 'https://nemacolin-website.firebaseio.com'
-// }
+const config = {
+  credential: admin.credential.cert({ private_key, client_email }),
+  databaseURL: 'https://nemacolin-website.firebaseio.com'
+}
 
-// admin.initializeApp({ config })
+admin.initializeApp({ config })
 
 // send emails with Nodemailer
 
@@ -114,24 +114,24 @@ app.post('/', (req, res) => {
   }
 });
 
-// app.post('/adduser', (req, res) => {
+app.post('/adduser', (req, res) => {
 
-//   let userData = {
-//     email: req.body.email,
-//     emailVerified: req.body.emailVerified,
-//     password: req.body.password,
-//     displayName: `${req.body.firstName} ${req.body.lastName}`
-//   }
+  let userData = {
+    email: req.body.email,
+    emailVerified: req.body.emailVerified,
+    password: req.body.password,
+    displayName: `${req.body.firstName} ${req.body.lastName}`
+  }
 
-//   admin.auth().createUser(userData)
-//     .then((userRecord) => {
-//       return res.send(userRecord)
-//     })
-//     .catch((error) => {
-//       console.log('add user error: ', error)
-//       return res.send(error)
-//     })
-// })
+  admin.auth().createUser(userData)
+    .then((userRecord) => {
+      return res.status(200).send(userRecord)
+    })
+    .catch((error) => {
+      console.log('add user error: ', error)
+      return res.status(500).send(error)
+    })
+})
 
 // Expose Express API as a single Cloud Function:
 exports.widgets = functions.https.onRequest(app);

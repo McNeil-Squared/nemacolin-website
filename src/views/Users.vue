@@ -205,11 +205,11 @@ export default {
           password: this.addUsers.password.value,
           displayName: `${this.newUserData.firstName} ${this.newUserData.lastName}`
         }
-        axios.post('https://us-central1-nemacolin-website.cloudfunctions.net/widgets/', userData)
+        axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/adduser', userData)
           .then(res => {
             res.status === 200 ? this.status = 'success' : this.status = 'fail'
             this.sending = false
-            this.clear()
+            console.log(res)
           })
           .catch(error => {
             console.log(error)
