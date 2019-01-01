@@ -60,7 +60,7 @@ export default {
       this.$v.$touch()
       if (!this.$v.$invalid) {
         this.sending = true
-        let messageData = { name: this.name, email: this.email.toLowerCase(), message: this.message, ipData: this.ipData, apiKey: process.env.VUE_APP_CONTACTFORMAPIKEY }
+        let messageData = { name: this.name, email: this.email.toLowerCase(), message: this.message, ipData: this.ipData, apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY }
         axios.post('https://us-central1-nemacolin-website.cloudfunctions.net/widgets/', messageData)
           .then(res => {
             res.status === 200 ? this.status = 'success' : this.status = 'fail'

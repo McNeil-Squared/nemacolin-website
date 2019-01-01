@@ -24,7 +24,7 @@
     v-layout(row wrap)
       v-flex(xs12 md4 offset-md4)
         v-dialog(v-model="addUser" :width="width")
-          form.pa-3(@submit.prevent="submit" v-if="!loading")
+          form.pa-3(@submit.prevent="submit" v-if="!loading" autocomplete="on")
             h4.text-xs-center.my-2 Add User
             template(v-for="(item, key) in addUsers")
               template(v-if="key !=='mailing' && key !=='physical'")
@@ -49,6 +49,7 @@
                     v-select(v-model="item[key2].value" :items="item[key2].options" item-text="label" item-value="value" :label="item[key2].label" solo append-icon="fas fa-sort-down")
             div.text-xs-center
               v-btn(v-if="status !== 'success'" @click="submit" color="primary" :loading="sending" :disabled="sending || $v.$invalid") Submit
+              //- v-btn(v-if="status !== 'success'" @click="submit" color="primary" :loading="sending") Submit
 </template>
 
 <script>
@@ -199,20 +200,37 @@ export default {
             this.newUserData[item] = this.addUsers[item].value
           }
         }
+
         let userData = {
           email: this.newUserData.email,
           emailVerified: false,
           password: this.addUsers.password.value,
-          displayName: `${this.newUserData.firstName} ${this.newUserData.lastName}`
+          displayName: `${this.newUserData.firstName} ${this.newUserData.lastName}`,
+          apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY
         }
+
         axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/adduser', userData)
-          .then(res => {
-            res.status === 200 ? this.status = 'success' : this.status = 'fail'
-            this.sending = false
-            console.log(res)
-          })
-          .catch(error => {
-            console.log(error)
+          .then(response => {
+            if (response.status === 200) {
+              console.log('database call')
+              firebase.firestore().collection('users').doc(response.data.uid).set(this.newUserData)
+                .then(() => {
+                  console.log()
+                  this.status = 'success'
+                  this.sending = false
+                })
+                .catch(error => {
+                  console.log('database error: ', error)
+                  this.status = 'fail'
+                  this.sending = false
+                })
+            } else {
+              console.log('other axios error: ', response)
+              this.status = 'fail'
+              this.sending = false
+            }
+          }).catch((error) => {
+            console.log('axios error: ', error.response)
             this.status = 'fail'
             this.sending = false
           })
