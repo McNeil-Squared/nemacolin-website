@@ -60,7 +60,7 @@ export default {
     buildUserMenu () {
       let items = [
         { name: 'Dashboard', action: '', restricted: 'no', to: '/dashboard' },
-        { name: 'User Profile', action: '', restricted: 'admin', to: `/profile/${this.user.username}` },
+        { name: 'User Profile', action: '', restricted: 'no', to: `/profile/${this.user.username}` },
         { name: 'User Management', action: '', restricted: 'admin', to: '/users' },
         { name: 'Logout', action: 'logout', restricted: 'no', to: '' }
       ]

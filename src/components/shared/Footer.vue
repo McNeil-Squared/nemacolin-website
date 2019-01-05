@@ -1,6 +1,6 @@
 <template lang="pug">
   v-footer(app color='primary' height='48')
-    p &copy;2018 Nemacolin Inc
+    p &copy;{{ new Date().getFullYear() }} Nemacolin Inc
     v-spacer
     div.mr-4
       v-btn.white--text(flat href="tel:724-320-2750")

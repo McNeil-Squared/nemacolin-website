@@ -44,6 +44,7 @@
 <script>
 import firebase from '../firebase.js'
 import states from '../states.js'
+import { mapState } from 'vuex'
 import { validationMixin } from 'vuelidate'
 import { required, requiredIf, email, numeric, minLength, maxLength, helpers } from 'vuelidate/lib/validators'
 import EmailVerification from '../components/EmailVerification'
@@ -99,37 +100,36 @@ export default {
   },
   methods: {
     getUserData () {
-      firebase.firestore().collection('users').where('username', '==', this.username).get()
-        .then((snapshot) => {
-          snapshot.forEach((doc) => {
-            let firebaseData = doc.data()
-            let currentUser = {
-              email: { label: 'Email', value: firebaseData.email, type: 'input', validations: ['required', 'email'] },
-              firstName: { label: 'First Name', value: firebaseData.firstName, type: 'input', validations: ['required', 'name'] },
-              lastName: { label: 'Last Name', value: firebaseData.lastName, type: 'input', validations: ['required', 'name'] },
-              phone: { label: 'Phone Number', value: firebaseData.phone, type: 'input', validations: ['required', 'phone'] },
-              mailing: {
-                address: { label: 'Mailing Address', value: firebaseData.mailing.address, type: 'input', validations: ['required', 'name'] },
-                city: { label: 'Mailing City', value: firebaseData.mailing.city, type: 'input', validations: ['required', 'name'] },
-                state: { label: 'Mailing State', value: firebaseData.mailing.state, type: 'select', options: states, validations: ['required'] },
-                zip: { label: 'Mailing Zip Code', value: firebaseData.mailing.zip, type: 'input', validations: ['required', 'numeric', 'minLength', 'maxLength'] }
-              },
-              physical: {
-                address: { label: 'Physical Address', value: firebaseData.physical.address, type: 'input', validations: ['required', 'name'] },
-                city: { label: 'Physical City', value: firebaseData.physical.city, type: 'input', validations: ['required', 'name'] },
-                state: { label: 'Physical State', value: firebaseData.physical.state, type: 'select', options: states, validations: ['required'] },
-                zip: { label: 'Physical Zip Code', value: firebaseData.physical.zip, type: 'input', validations: ['required', 'numeric', 'minLength', 'maxLength'] }
-              },
-              username: { label: 'User Name', value: firebaseData.username, type: 'input', validations: ['required'] },
-              position: { label: 'Position', value: firebaseData.position, type: 'select', options: ['President', 'Vice-President', 'Secretary', 'Treasurer', 'Member', 'Support', 'Council', 'Vendor'], validations: ['required'] },
-              role: { label: 'System Role', value: firebaseData.role, type: 'select', options: ['user', 'admin'], validations: ['required'] }
-            }
-            this.user = currentUser
-            this.currentUserEmail = firebaseData.email
-            this.currentUserUsername = firebaseData.username
-            this.loading = false
-          })
-        }).catch(error => console.log(error))
+      console.log(this.username)
+      firebase.firestore().collection('users').doc(this.$store.getters.user.uid).get()
+        .then((doc) => {
+          let firebaseData = doc.data()
+          let currentUser = {
+            email: { label: 'Email', value: firebaseData.email, type: 'input', validations: ['required', 'email'] },
+            firstName: { label: 'First Name', value: firebaseData.firstName, type: 'input', validations: ['required', 'name'] },
+            lastName: { label: 'Last Name', value: firebaseData.lastName, type: 'input', validations: ['required', 'name'] },
+            phone: { label: 'Phone Number', value: firebaseData.phone, type: 'input', validations: ['required', 'phone'] },
+            mailing: {
+              address: { label: 'Mailing Address', value: firebaseData.mailing.address, type: 'input', validations: ['required', 'name'] },
+              city: { label: 'Mailing City', value: firebaseData.mailing.city, type: 'input', validations: ['required', 'name'] },
+              state: { label: 'Mailing State', value: firebaseData.mailing.state, type: 'select', options: states, validations: ['required'] },
+              zip: { label: 'Mailing Zip Code', value: firebaseData.mailing.zip, type: 'input', validations: ['required', 'numeric', 'minLength', 'maxLength'] }
+            },
+            physical: {
+              address: { label: 'Physical Address', value: firebaseData.physical.address, type: 'input', validations: ['required', 'name'] },
+              city: { label: 'Physical City', value: firebaseData.physical.city, type: 'input', validations: ['required', 'name'] },
+              state: { label: 'Physical State', value: firebaseData.physical.state, type: 'select', options: states, validations: ['required'] },
+              zip: { label: 'Physical Zip Code', value: firebaseData.physical.zip, type: 'input', validations: ['required', 'numeric', 'minLength', 'maxLength'] }
+            },
+            username: { label: 'User Name', value: firebaseData.username, type: 'input', validations: ['required'] },
+            position: { label: 'Position', value: firebaseData.position, type: 'select', options: ['President', 'Vice-President', 'Secretary', 'Treasurer', 'Member', 'Support', 'Council', 'Vendor'], validations: ['required'] },
+            role: { label: 'System Role', value: firebaseData.role, type: 'select', options: ['user', 'admin'], validations: ['required'] }
+          }
+          this.user = currentUser
+          this.currentUserEmail = firebaseData.email
+          this.currentUserUsername = firebaseData.username
+          this.loading = false
+        }).catch(error => console.log('database error: ', error))
     },
     submit () {
       if (!this.$v.$invalid) {
@@ -266,7 +266,8 @@ export default {
     },
     usernameChanged () {
       return this.user.username.value !== this.currentUserUsername
-    }
+    },
+    ...mapState({ loggedinUser: state => state.user })
   },
   watch: {
     'user.firstName.value': function () {
@@ -274,10 +275,17 @@ export default {
     },
     'user.lastName.value': function () {
       this.user.username.value = this.buildUsername()
+    },
+    loggedinUser: function () {
+      if (this.loggedinUser) {
+        this.getUserData()
+      }
     }
   },
   created () {
-    this.getUserData()
+    if (this.loggedinUser) {
+      this.getUserData()
+    }
   }
 }
 </script>
