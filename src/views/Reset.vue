@@ -14,7 +14,8 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required } from 'vuelidate/lib/validators'
-import firebase from 'firebase'
+// import firebase from 'firebase'
+import axios from 'axios'
 
 export default {
   data () {
@@ -41,15 +42,18 @@ export default {
       if (!this.$v.$invalid) {
         this.status = ''
         this.sending = true
-        let loginData = { email: this.username.toLowerCase() }
-        firebase.auth().sendPasswordResetEmail(loginData.email)
+        let messageData = {
+          email: this.username.toLowerCase(),
+          apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY
+        }
+        axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/resetpassword', messageData)
           .then(() => {
             this.status = 'success'
             this.sending = false
           })
           .catch((error) => {
-            console.log(error)
-            error.code === 'auth/user-not-found' ? this.errorMessage = 'Sorry, there is no account with that email.\u00A0\u00A0Were you registered with a different email?' : this.errorMessage = 'Hmmmm!\u00A0\u00A0It looks like something went wrong.\u00A0\u00A0Please try again.'
+            console.log(error.response)
+            error.response.data.code === 'auth/user-not-found' ? this.errorMessage = 'Sorry, there is no account with that email.\u00A0\u00A0Were you registered with a different email?' : this.errorMessage = 'Hmmmm!\u00A0\u00A0It looks like something went wrong.\u00A0\u00A0Please try again.'
             this.status = 'error'
             this.sending = false
           })

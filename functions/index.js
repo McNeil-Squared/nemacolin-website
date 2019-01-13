@@ -4,7 +4,9 @@ const cors = require('cors');
 const nodemailer = require('nodemailer')
 const admin = require('firebase-admin')
 const middleware = require('./middleware')
-const emailTemplates = require('./emailTemplates')
+const emailVerification = require('./emails/emailVerification')
+const contactForm = require('./emails/contactForm')
+const passwordReset = require('./emails/passwordReset')
 
 
 // development variables
@@ -51,11 +53,66 @@ const sendVerificationEmail = (emailData) => {
     admin.auth().generateEmailVerificationLink(emailData.email, actionCodeSettings)
       .then((link) => {
         emailData.emailLink = link
+        let templateData = {}
+        if  (emailData.type === 'new user') {
+          templateData = {
+            greeting: [emailData.displayName],
+            primaryMessage: ['Your Nemacolin Inc login has been created', 'https://res.cloudinary.com/dwfj8jbmf/image/upload/v1547314864/primary.jpg', 'computerdog', 'Below are your login credentials:'],
+            userInfo: ['Email:', emailData.email, 'Password:', emailData.password],
+            buttonAction: ['I just need you to do one thing first: Verify your email address.', 'Please click the button below', emailData.emailLink, 'Verify Your Email'],
+            closing: ['Thanks', 'Angie Visnesky', 'President - Nemacolin Inc']
+          }
+        } else {
+          templateData = {
+            greeting: [emailData.displayName],
+            primaryMessage: ['I see that your email has changed', 'https://res.cloudinary.com/dwfj8jbmf/image/upload/v1547314864/primary.jpg', 'computerdog', 'Your new email is:'],
+            userInfo: ['Email:', emailData.email, '', ''],
+            buttonAction: ['To complete the change I just need you to verify your email address.', 'Please click the button below', emailData.emailLink, 'Verify Your Email'],
+            closing: ['Thanks', 'Angie Visnesky', 'President - Nemacolin Inc']
+          }
+        }
+
         const mailOptions = {
           from: 'info@nemacolininc.com',
           to: emailData.email,
           subject: emailData.subject,
-          html: emailTemplates.generate(emailData)
+          html: emailVerification.build(templateData)
+        }
+      
+        return mailTransport.sendMail(mailOptions, (error, info) => {
+          if (info) {
+            resolve()
+          }
+          else {
+            console.log(error)
+            reject(error)
+          }
+        })
+        
+      })
+      .catch((error) => {
+        reject(error)
+      })
+  })
+}
+
+const sendPasswordResetEmail = (emailData) => {
+  return new Promise((resolve, reject) => {
+    admin.auth().generatePasswordResetLink(emailData.email, actionCodeSettings)
+      .then((link) => {
+        emailData.resetLink = link
+        let templateData = {
+          greeting: [emailData.displayName],
+          primaryMessage: ['You are receiving this email because you have requested to reset your password', 'https://res.cloudinary.com/dwfj8jbmf/image/upload/v1547314864/primary.jpg', 'computerdog', ''],
+          buttonAction: ['Click the button below to complete the reset and choose a new password.', 'If you did not request a password reset you may delete this email.', emailData.resetLink, 'Reset Your Password'],
+          closing: ['Thanks', 'Angie Visnesky', 'President - Nemacolin Inc']
+        }
+
+        const mailOptions = {
+          from: 'info@nemacolininc.com',
+          to: emailData.email,
+          subject: emailData.subject,
+          html: passwordReset.build(templateData)
         }
       
         return mailTransport.sendMail(mailOptions, (error, info) => {
@@ -85,7 +142,7 @@ app.use(middleware);
 
 // build multiple CRUD interfaces:
 
-app.post('/', (req, res) => {
+app.post('/contact', (req, res) => {
   const name = req.body.name
   const email = req.body.email
   const message = req.body.message
@@ -98,40 +155,19 @@ app.post('/', (req, res) => {
   const ipCountry = req.body.ipData.country
   const ipCoords = req.body.ipData.loc
 
-  const htmlBlock = `
-  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-  <div class="wrapper" style="margin: 0;padding: 1.0rem 0;background-color: #ccc;">
-    <table class="message" style="font-family: 'Roboto', sans-serif;border-collapse: collapse;margin: auto;width: 90%;background-color: #fff;">
-      <tr><td colspan="2" class="logo" style="border-bottom: 0;padding-bottom: 0;padding: 0.5rem;background-color: #fff;">
-        <img src="http://localhost:5000/favicons/favicon-96x96.png" alt="nemacolin logo" style="display: block;margin: auto;">
-      </td></tr>
-      <tr><td colspan="2" class="logo-caption" style="text-align: center;color: #ba1b1d;border-top: none;padding-top: 0;font-weight: 600;padding: 0.5rem;background-color: #fff;">Nemacolin Inc</td></tr>
-      <tr><td colspan="2" class="title" style="font-weight: 600;font-size: 1.25rem;text-align: center;padding: 0.5rem;background-color: #fff;padding-bottom: 1.0rem !important;">New Contact Form Entry</td></tr>
-      <tr><td colspan="2" class="hr" style="border: 1px solid #ba1b1d;border-radius: 2px;height: 4px;padding: 0 !important;background-color: #ba1b1d !important;"></td></tr>
-      <tr><td class="name from" style="font-weight: 600;width: 10%;padding: 0.5rem;background-color: #fff;padding-top: 1.0rem !important;">From:</td><td class="content from" style="padding: 0.5rem;background-color: #fff;padding-top: 1.0rem !important;">${name}</td></tr>
-      <tr><td class="name" style="font-weight: 600;width: 10%;padding: 0.5rem;background-color: #fff;">Email:</td><td style="padding: 0.5rem;background-color: #fff;">${email}</td></tr>
-      <tr><td colspan="2" class="name message-name" style="font-weight: 600;width: 10%;text-align: center;padding: 0.5rem;background-color: #fff;">Message</td></tr>
-      <tr><td colspan="2" style="padding: 0.5rem;background-color: #fff;">${message}</td></tr>
-    </table>
-    <table class="info" style="font-family: 'Roboto', sans-serif;border-collapse: collapse;margin: auto;width: 90%;background-color: #fff;">
-      <p class="ip-title" style="font-weight: 600;text-align: center;">Submitter Information</p>
-      <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">ip</td><td id="ip" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipAddress}</td></tr>
-      <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">Host</td><td id="ip-coords" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipHostname}</td></tr>
-      <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">Organization</td><td id="ip-org" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipOrganization}</td></tr>
-      <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">City</td><td id="ip-city" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipCity}</td></tr>
-      <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">Region</td><td id="ip-region" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipRegion}</td></tr>
-      <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">Zip Code</td><td id="ip-coords" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipZipcode}</td></tr>
-      <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">Country</td><td id="ip-country" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipCountry}</td></tr>
-      <tr><td style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">Coords</td><td id="ip-coords" style="padding: 0.5rem;background-color: #fff;border: 1px solid #000;">${ipCoords}</td></tr>
-    </table>
-  </div>
-  `
+  const templateData = {
+    greeting: ['Angie'],
+    primaryMessage: ['You have a new Nemacolin Inc contact form entry', 'https://res.cloudinary.com/dwfj8jbmf/image/upload/v1547314864/primary.jpg', 'computerdog', 'From:'],
+    userInfo: ['Name:', name, 'Email:', email],
+    contactFormMessage: [name, message],
+    ipAddress: [name, ipAddress, ipHostname, ipOrganization, ipCity, ipRegion, ipZipcode, ipCountry, ipCoords]
+  }
 
   const mailOptions = {
     from: `"${name}" ${email}`,
     to: 'info@nemacolininc.com',
     subject: 'New Nemacolin Contact Form Entry',
-    html: htmlBlock
+    html: contactForm.build(templateData)
   }
 
   return mailTransport.sendMail(mailOptions, (error, info) => {
@@ -165,7 +201,7 @@ app.post('/adduser', middleware, (req, res) => {
         email: userRecord.email,
         password: userData.password,
         subject: `Nemacolin Inc Login for ${userRecord.displayName}`,
-        emailTemplate: 'newUser'
+        type: 'new user'
       }
       uid = userRecord.uid
       return sendVerificationEmail(emailData)
@@ -180,6 +216,27 @@ app.post('/adduser', middleware, (req, res) => {
     })
 })
 
-// Expose Express API as a single Cloud Function:
-exports.widgets = functions.https.onRequest(app);
+app.post('/resetpassword', middleware, (req, res) => {
+  const email = req.body.email
 
+  admin.auth().getUserByEmail(email)
+    .then((userRecord) => {
+      let emailData = {
+        displayName: userRecord.displayName,
+        email: userRecord.email,
+        subject: `Nemacolin Inc Password Reset for ${userRecord.displayName}`,
+      }
+      return sendPasswordResetEmail(emailData)
+    })
+    .then(() => {
+      console.log('success')
+      return res.status(200).send('success')
+    })
+    .catch((error) => {
+      console.log('password error: ', error)
+      return res.status(500).send(error)
+    })
+})
+
+// Expose Express API as a single Cloud Function:
+exports.widgets = functions.https.onRequest(app)

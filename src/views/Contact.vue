@@ -61,7 +61,7 @@ export default {
       if (!this.$v.$invalid) {
         this.sending = true
         let messageData = { name: this.name, email: this.email.toLowerCase(), message: this.message, ipData: this.ipData, apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY }
-        axios.post('https://us-central1-nemacolin-website.cloudfunctions.net/widgets/', messageData)
+        axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/contact', messageData)
           .then(res => {
             res.status === 200 ? this.status = 'success' : this.status = 'fail'
             this.sending = false
