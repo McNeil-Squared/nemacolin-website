@@ -48,6 +48,7 @@ import { mapState } from 'vuex'
 import { validationMixin } from 'vuelidate'
 import { required, requiredIf, email, numeric, minLength, maxLength, helpers } from 'vuelidate/lib/validators'
 import EmailVerification from '../components/EmailVerification'
+
 /* eslint-disable no-useless-escape */
 const name = helpers.regex('name', /^[a-zA-Z 0-9\.\,\-]*$/)
 const phone = helpers.regex('phone', /^[0-9]{3}\-[0-9]{3}\-[0-9]{4}$/)
@@ -100,7 +101,6 @@ export default {
   },
   methods: {
     getUserData () {
-      console.log(this.loggedinUser)
       firebase.firestore().collection('users').doc(this.$store.getters.user.uid).get()
         .then((doc) => {
           let firebaseData = doc.data()

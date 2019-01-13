@@ -236,5 +236,28 @@ app.post('/resetpassword', middleware, (req, res) => {
     })
 })
 
+app.post('/verifyemail', middleware, (req, res) => {
+  const email = req.body.email
+
+  admin.auth().getUserByEmail(email)
+    .then((userRecord) => {
+      let emailData = {
+        displayName: userRecord.displayName,
+        email: userRecord.email,
+        subject: `Nemacolin Inc Password Reset for ${userRecord.displayName}`,
+        type: 'existing user'
+      }
+      return sendVerificationEmail(emailData)
+    })
+    .then(() => {
+      console.log('success')
+      return res.status(200).send('success')
+    })
+    .catch((error) => {
+      console.log('password error: ', error)
+      return res.status(500).send(error)
+    })
+})
+
 // Expose Express API as a single Cloud Function:
 exports.widgets = functions.https.onRequest(app)

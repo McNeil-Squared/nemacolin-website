@@ -1,25 +1,26 @@
 <template lang="pug">
   div
-    h2.text-xs-center.primary--text User Management
+    h2.text-xs-center.primary--text.mb-3 User Management
     div.text-xs-center.my-2(v-if="loading")
       v-icon.loading fas fa-sync
+    v-btn(fab fixed bottom right color="primary" @click="addUser = !addUser")
+      v-icon fas fa-plus
     v-layout(row wrap)
-      v-flex(xs12 md4)
-        v-btn(fab fixed bottom right color="primary" @click="addUser = !addUser")
-          v-icon fas fa-plus
-        v-card(v-for="(user, i) in users" :key="i" v-if="!loading")
+      v-flex(xs12 md4 v-for="(user, i) in users" :key="i" v-if="!loading")
+        v-card.mx-2
           v-card-title.pb-0(primary title)
             div.full-width.text-xs-center.mb-3
               h3.headline.mb-0.mx-auto {{ user.firstName }} {{ user.lastName }}
             v-layout(row wrap)
-              v-flex(xs12 md8)
-                p Email: {{ user.email }}
-                p Position: {{ user.position }}
-              v-flex(xs12 md4)
-                p Phone: {{ user.phone }}
-                p Role: {{ user.role }}
+              v-flex(xs12 md7)
+                p #[span.font-weight-bold Email:] {{ user.email }}
+                p #[span.font-weight-bold Position:] {{ user.position }}
+              v-flex(xs12 md5)
+                p #[span.font-weight-bold Phone:] {{ user.phone }}
+                p #[span.font-weight-bold Role:] {{ user.role }}
           v-card-actions.justify-center
             v-btn(color="secondary" :to="user.profileLink") User Details
+            v-btn.white--text(color="caution" @click="disableUser(user)") Disable User
             v-btn(color="primary" @click="deleteUser(user)") Delete User
     v-layout(row wrap)
       v-flex(xs12 md4 offset-md4)
