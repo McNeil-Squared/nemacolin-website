@@ -10,7 +10,7 @@
           h4.text-xs-center.my-2 {{ userTitle }}
           template(v-for="(item, key) in user")
             template(v-if="key !=='mailing' && key !=='physical'")
-              template(v-if="((key ==='username' || key === 'position' || key ==='role') && user.role.value === 'admin') || (key !=='username' || key !== 'position' || key !=='role')")
+              template(v-if="((key === 'username' || key === 'position' || key ==='role') && user.role.value === 'admin') || (key !=='username' && key !== 'position' && key !=='role')")
                 template(v-if="item.type === 'input'")
                   label(for="key") {{ item.label }}
                   v-text-field(v-model="user[key].value" :id="key" :error-messages="errors[key]" @input="validateField(key, item.label, user[key].validations)" solo :disabled="key==='username'")
@@ -100,7 +100,7 @@ export default {
   },
   methods: {
     getUserData () {
-      console.log(this.username)
+      console.log(this.loggedinUser)
       firebase.firestore().collection('users').doc(this.$store.getters.user.uid).get()
         .then((doc) => {
           let firebaseData = doc.data()

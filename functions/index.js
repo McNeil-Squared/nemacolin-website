@@ -47,7 +47,6 @@ const actionCodeSettings = {
   url: 'http://localhost:8080/login',
 };
 
-
 const sendVerificationEmail = (emailData) => {
   return new Promise((resolve, reject) => {
     admin.auth().generateEmailVerificationLink(emailData.email, actionCodeSettings)
@@ -140,8 +139,7 @@ app.use(cors({ origin: true }));
 // Add middleware to authenticate requests
 app.use(middleware);
 
-// build multiple CRUD interfaces:
-
+// Routes:
 app.post('/contact', (req, res) => {
   const name = req.body.name
   const email = req.body.email
