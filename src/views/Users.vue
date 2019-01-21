@@ -3,7 +3,7 @@
     h2.text-xs-center.primary--text.mb-3 User Management
     div.text-xs-center.my-2(v-if="loading")
       v-icon.loading fas fa-sync
-    v-btn(fab fixed bottom right color="primary" @click="addUser = !addUser")
+    v-btn(fab fixed bottom right color="primary" to="/adduser")
       v-icon fas fa-plus
     v-layout(row wrap)
       v-flex(xs12 md4 v-for="(user, i) in users" :key="i" v-if="!loading")

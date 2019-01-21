@@ -55,6 +55,7 @@ const sendVerificationEmail = (emailData) => {
         let templateData = {}
         if  (emailData.type === 'new user') {
           templateData = {
+            type: 'new',
             greeting: [emailData.displayName],
             primaryMessage: ['Your Nemacolin Inc login has been created', 'https://res.cloudinary.com/dwfj8jbmf/image/upload/v1547314864/primary.jpg', 'computerdog', 'Below are your login credentials:'],
             userInfo: ['Email:', emailData.email, 'Password:', emailData.password],
@@ -63,9 +64,10 @@ const sendVerificationEmail = (emailData) => {
           }
         } else {
           templateData = {
+            type: 'existing',
             greeting: [emailData.displayName],
             primaryMessage: ['I see that your email has changed', 'https://res.cloudinary.com/dwfj8jbmf/image/upload/v1547314864/primary.jpg', 'computerdog', 'Your new email is:'],
-            userInfo: ['Email:', emailData.email, '', ''],
+            link: [emailData.email],
             buttonAction: ['To complete the change I just need you to verify your email address.', 'Please click the button below', emailData.emailLink, 'Verify Your Email'],
             closing: ['Thanks', 'Angie Visnesky', 'President - Nemacolin Inc']
           }
@@ -244,7 +246,7 @@ app.post('/verifyemail', middleware, (req, res) => {
       let emailData = {
         displayName: userRecord.displayName,
         email: userRecord.email,
-        subject: `Nemacolin Inc Password Reset for ${userRecord.displayName}`,
+        subject: `Verify Email Address for ${userRecord.displayName}`,
         type: 'existing user'
       }
       return sendVerificationEmail(emailData)

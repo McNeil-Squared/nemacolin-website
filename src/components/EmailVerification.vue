@@ -7,6 +7,7 @@
 
 <script>
 import firebase from '../firebase.js'
+import axios from 'axios'
 import { mapState } from 'vuex'
 export default {
   data () {
@@ -19,7 +20,11 @@ export default {
   methods: {
     resendVerificationEmail () {
       let currentUser = firebase.auth().currentUser
-      currentUser.sendEmailVerification()
+      let userData = {
+        email: currentUser.email,
+        apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY
+      }
+      axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/verifyemail', userData)
         .then(() => {
           this.verificationResend = true
         }).catch((error) => {

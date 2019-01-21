@@ -82,7 +82,7 @@ export default {
   },
   watch: {
     user: function () {
-      this.buildUserMenu()
+      if (this.user) { this.buildUserMenu() }
     }
   }
 }
