@@ -62,15 +62,24 @@ const sendVerificationEmail = (emailData) => {
             buttonAction: ['I just need you to do one thing first: Verify your email address.', 'Please click the button below', emailData.emailLink, 'Verify Your Email'],
             closing: ['Thanks', 'Angie Visnesky', 'President - Nemacolin Inc']
           }
-        } else {
+        } else if (emailData.type === 'email change') {
           templateData = {
-            type: 'existing',
+            type: 'change',
             greeting: [emailData.displayName],
             primaryMessage: ['I see that your email has changed', 'https://res.cloudinary.com/dwfj8jbmf/image/upload/v1547314864/primary.jpg', 'computerdog', 'Your new email is:'],
             link: [emailData.email],
             buttonAction: ['To complete the change I just need you to verify your email address.', 'Please click the button below', emailData.emailLink, 'Verify Your Email'],
             closing: ['Thanks', 'Angie Visnesky', 'President - Nemacolin Inc']
           }
+        } else {
+            templateData = {
+              type: 'resend',
+              greeting: [emailData.displayName],
+              primaryMessage: ['Here is the email verification that you requested', 'https://res.cloudinary.com/dwfj8jbmf/image/upload/v1547314864/primary.jpg', 'computerdog', 'Your email is:'],
+              link: [emailData.email],
+              buttonAction: ['To verify your email address please click the button below.', '', emailData.emailLink, 'Verify Your Email'],
+              closing: ['Thanks', 'Angie Visnesky', 'President - Nemacolin Inc']
+            }
         }
 
         const mailOptions = {
@@ -104,7 +113,7 @@ const sendPasswordResetEmail = (emailData) => {
         emailData.resetLink = link
         let templateData = {
           greeting: [emailData.displayName],
-          primaryMessage: ['You are receiving this email because you have requested to reset your password', 'https://res.cloudinary.com/dwfj8jbmf/image/upload/v1547314864/primary.jpg', 'computerdog', ''],
+          primaryMessage: ['You are receiving this email because your password has been reset', 'https://res.cloudinary.com/dwfj8jbmf/image/upload/v1547314864/primary.jpg', 'computerdog', ''],
           buttonAction: ['Click the button below to complete the reset and choose a new password.', 'If you did not request a password reset you may delete this email.', emailData.resetLink, 'Reset Your Password'],
           closing: ['Thanks', 'Angie Visnesky', 'President - Nemacolin Inc']
         }
@@ -201,7 +210,7 @@ app.post('/adduser', middleware, (req, res) => {
         email: userRecord.email,
         password: userData.password,
         subject: `Nemacolin Inc Login for ${userRecord.displayName}`,
-        type: 'new user'
+        type: 'new'
       }
       uid = userRecord.uid
       return sendVerificationEmail(emailData)
@@ -240,6 +249,7 @@ app.post('/resetpassword', middleware, (req, res) => {
 
 app.post('/verifyemail', middleware, (req, res) => {
   const email = req.body.email
+  const type = req.body.type
 
   admin.auth().getUserByEmail(email)
     .then((userRecord) => {
@@ -247,7 +257,7 @@ app.post('/verifyemail', middleware, (req, res) => {
         displayName: userRecord.displayName,
         email: userRecord.email,
         subject: `Verify Email Address for ${userRecord.displayName}`,
-        type: 'existing user'
+        type
       }
       return sendVerificationEmail(emailData)
     })

@@ -1,6 +1,6 @@
 <template lang="pug">
   div
-    app-EmailVerification.text-xs-center.mb-3
+    EmailVerification.text-xs-center.mb-3
     v-layout(row wrap)
       v-flex(xs12 md4 offset-md4)
         h2.text-xs-center.primary--text {{ username ? 'User Profile' : 'Add New User' }}
@@ -86,7 +86,7 @@ export default {
     username: { type: String, required: false },
     type: { type: String, required: true }
   },
-  components: { appEmailVerification: EmailVerification },
+  components: { EmailVerification },
   mixins: [validationMixin],
   validations: {
     user: {
@@ -249,6 +249,7 @@ export default {
       let currentUser = firebase.auth().currentUser
       let userData = {
         email: updatedUserdata.email,
+        type: 'change',
         apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY
       }
       currentUser.updateEmail(updatedUserdata.email)
