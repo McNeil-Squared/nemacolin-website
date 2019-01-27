@@ -6,7 +6,7 @@
     v-btn(fab fixed bottom right color="primary" to="/adduser")
       v-icon fas fa-plus
     v-layout(row wrap)
-      v-flex(xs12 md4 v-for="(user, i) in users" :key="i" v-if="!loading")
+      v-flex(xs12 md6 v-for="(user, i) in users" :key="i" v-if="!loading")
         v-card(:class="[{disabledUser: user.disabled}]").mx-2
           v-card-title.pb-0(primary title)
             div.full-width.text-xs-center.mb-3
@@ -19,6 +19,7 @@
                 p #[span.font-weight-bold Phone:] {{ user.phone }}
                 p #[span.font-weight-bold Role:] {{ user.role }}
           v-card-actions.justify-center
+            v-btn(color="accent" @click="toggleResetPasswordModal(user)") Reset Password
             v-btn(color="secondary" :to="user.profileLink") User Details
             v-btn.white--text(v-if="!user.disabled" color="caution" @click="confirmAction(user, 'Disable')") Disable User
             v-btn.white--text(v-else color="caution" @click="confirmAction(user, 'Re-Enable')") Re-Enable User
@@ -37,11 +38,15 @@
             v-card-actions.pb-4
               v-btn.mx-auto(@click="action !== 'Delete' ? disableOrReEnableUser() : deleteUser()" color="primary" :loading="sending" :disabled="sending") Confirm
               v-btn.mx-auto(@click="confirm = false" color="accent" v-show="!sending") Cancel
+    v-layout(row wrap)
+      v-flex(xs12 md4 offset-md4)
+        ResetPassword
 </template>
 
 <script>
 import firebase from '../firebase.js'
 import axios from 'axios'
+import ResetPassword from '../components/ResetPassword'
 
 export default {
   data () {
@@ -56,6 +61,7 @@ export default {
       status: ''
     }
   },
+  components: { ResetPassword },
   methods: {
     getUsers () {
       firebase.firestore().collection('users').get()
@@ -147,6 +153,10 @@ export default {
           this.sending = false
           this.status = 'error'
         })
+    },
+    toggleResetPasswordModal (user) {
+      this.$store.dispatch('setTargetUser', user)
+      this.$store.dispatch('toggleResetPasswordModal')
     }
   },
   created () {

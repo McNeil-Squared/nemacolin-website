@@ -113,8 +113,9 @@ const sendPasswordResetEmail = (emailData) => {
         emailData.resetLink = link
         let templateData = {
           greeting: [emailData.displayName],
-          primaryMessage: ['You are receiving this email because your password has been reset', 'https://res.cloudinary.com/dwfj8jbmf/image/upload/v1547314864/primary.jpg', 'computerdog', ''],
-          buttonAction: ['Click the button below to complete the reset and choose a new password.', 'If you did not request a password reset you may delete this email.', emailData.resetLink, 'Reset Your Password'],
+          primaryMessage: ['You are receiving this email because your Nemacolin Inc password has been changed', 'https://res.cloudinary.com/dwfj8jbmf/image/upload/v1547314864/primary.jpg', 'computerdog', 'Your new password is:'],
+          link: [emailData.password],
+          secondaryMessage: ['Please store your password in a secure place.  Never share your password with anyone.  If you have any questions please let me know.'],
           closing: ['Thanks', 'Angie Visnesky', 'President - Nemacolin Inc']
         }
 
@@ -157,12 +158,12 @@ const disableUser = (userRecord) => {
 const reEnableUser = (userRecord) => {
   return new Promise((resolve, reject) => {
     admin.auth().updateUser(userRecord.uid, { disabled: false })
-      .then((userRecord) => {
-        return resolve(userRecord)
-      })
-      .catch((error) => {
-        reject(error)
-      })
+    .then((userRecord) => {
+      return resolve(userRecord)
+    })
+    .catch((error) => {
+      reject(error)
+    })
   })
 }
 
@@ -170,8 +171,26 @@ const deleteUser = (userRecord) => {
   let userToDelete = userRecord
   return new Promise((resolve, reject) => {
     admin.auth().deleteUser(userRecord.uid)
+    .then(() => {
+      return resolve(userToDelete)
+    })
+    .catch((error) => {
+      reject(error)
+    })
+  })
+}
+
+const changeUserPassword = (userRecord, password) => {
+  return new Promise((resolve, reject) => {
+    admin.auth().updateUser(userRecord.uid, { password })
       .then(() => {
-        return resolve(userToDelete)
+        let emailData = {
+          displayName: userRecord.displayName,
+          email: userRecord.email,
+          password: password,
+          subject: `New Nemacolin Inc Password for ${userRecord.displayName}`,
+        }
+        return resolve(sendPasswordResetEmail(emailData))
       })
       .catch((error) => {
         reject(error)
@@ -264,15 +283,10 @@ app.post('/adduser', middleware, (req, res) => {
 
 app.post('/resetpassword', middleware, (req, res) => {
   const email = req.body.email
-
+  const password = req.body.password
   admin.auth().getUserByEmail(email)
-  .then((userRecord) => {
-    let emailData = {
-      displayName: userRecord.displayName,
-      email: userRecord.email,
-        subject: `Nemacolin Inc Password Reset for ${userRecord.displayName}`,
-      }
-      return sendPasswordResetEmail(emailData)
+    .then((userRecord) => {
+      return changeUserPassword(userRecord, password)
     })
     .then(() => {
       console.log('success')

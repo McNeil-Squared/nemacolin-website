@@ -9,7 +9,9 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     navDrawer: false,
-    user: null
+    user: null,
+    resetPasswordModal: false,
+    targetUser: { firstName: '', lastName: '' }
   },
   getters: {
     navDrawer (state) {
@@ -32,6 +34,12 @@ export default new Vuex.Store({
     },
     removeUserSessionData (state) {
       state.user = null
+    },
+    toggleResetPasswordModal (state) {
+      state.resetPasswordModal = !state.resetPasswordModal
+    },
+    setTargetUser (state, user) {
+      state.targetUser = user
     }
   },
   actions: {
@@ -57,6 +65,12 @@ export default new Vuex.Store({
     },
     removeUserSessionData ({ commit }) {
       commit('removeUserSessionData')
+    },
+    toggleResetPasswordModal ({ commit }) {
+      commit('toggleResetPasswordModal')
+    },
+    setTargetUser ({ commit }, user) {
+      commit('setTargetUser', user)
     }
   }
 })

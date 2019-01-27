@@ -358,16 +358,10 @@ export default {
       this.user.username.value = this.buildUsername()
     },
     loggedinUser: function () {
-      // if (this.loggedinUser) {
-      //   this.getUserData()
-      // }
       this.loggedinUser && this.type === 'profile' ? this.getUserData() : this.buildForm()
     }
   },
   created () {
-    // if (this.loggedinUser && this.type === 'profile') {
-    //   this.getUserData()
-    // }
     this.loggedinUser && this.type === 'profile' ? this.getUserData() : this.buildForm()
   }
 }
