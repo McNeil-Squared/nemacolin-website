@@ -172,7 +172,7 @@ export default {
             for (let subitem in this.user[item]) {
               this.updatedUserdata[item][subitem] = this.user[item][subitem].value
             }
-          } else {
+          } else if (item !== 'password') {
             this.updatedUserdata[item] = this.user[item].value
           }
         }

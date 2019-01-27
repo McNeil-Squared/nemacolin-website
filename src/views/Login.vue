@@ -2,13 +2,13 @@
   v-container(text-xs-center)
     v-layout(row wrap)
       v-flex(xs12 md4 offset-md4)
-        form(@submit.prevent="submit" autocomplete="on")
+        form.mb-2(@submit.prevent="submit" autocomplete="on")
           h2.mt-2.mb-4 Nemacolin Inc Board Member Login
           v-text-field(v-model="username" :error-messages="usernameErrors" label="Username" required @input="$v.username.$touch()" @blur="$v.username.$touch()" solo)
           v-text-field(v-model="password" :error-messages="passwordErrors" label="Password" required @input="$v.password.$touch()" @blur="$v.password.$touch()" solo type="password")
           v-btn(v-if="status != 'success'" @click="submit" color="primary" :loading="sending" :disabled="sending") Submit
-        v-alert(v-if="status === 'error' && !sending" type="error" icon="fas fa-times" value="true") Incorrect username or password.
-        router-link.mt-3(tag="p" to="/resetpassword") I forgot my password.
+        v-alert(v-if="status === 'credentialError' && !sending" type="error" icon="fas fa-times" value="true") Incorrect username or password.
+        v-alert(v-if="status === 'disabled' && !sending" type="error" icon="fas fa-times" value="true") This account has been disabled.
 </template>
 
 <script>
@@ -56,7 +56,11 @@ export default {
           .then(this.$router.replace('/dashboard'))
           .catch((error) => {
             console.log(error)
-            this.status = 'error'
+            if (error.code === 'auth/user-disabled') {
+              this.status = 'disabled'
+            } else {
+              this.status = 'credentialError'
+            }
             this.sending = false
           })
       }

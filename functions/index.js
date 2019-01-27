@@ -142,6 +142,43 @@ const sendPasswordResetEmail = (emailData) => {
   })
 }
 
+const disableUser = (userRecord) => {
+  return new Promise((resolve, reject) => {
+    admin.auth().updateUser(userRecord.uid, { disabled: true })
+      .then((userRecord) => {
+        return resolve(userRecord)
+      })
+      .catch((error) => {
+        reject(error)
+      })
+  })
+}
+
+const reEnableUser = (userRecord) => {
+  return new Promise((resolve, reject) => {
+    admin.auth().updateUser(userRecord.uid, { disabled: false })
+      .then((userRecord) => {
+        return resolve(userRecord)
+      })
+      .catch((error) => {
+        reject(error)
+      })
+  })
+}
+
+const deleteUser = (userRecord) => {
+  let userToDelete = userRecord
+  return new Promise((resolve, reject) => {
+    admin.auth().deleteUser(userRecord.uid)
+      .then(() => {
+        return resolve(userToDelete)
+      })
+      .catch((error) => {
+        reject(error)
+      })
+  })
+}
+
 const app = express();
 
 // Automatically allow cross-origin requests
@@ -229,10 +266,10 @@ app.post('/resetpassword', middleware, (req, res) => {
   const email = req.body.email
 
   admin.auth().getUserByEmail(email)
-    .then((userRecord) => {
-      let emailData = {
-        displayName: userRecord.displayName,
-        email: userRecord.email,
+  .then((userRecord) => {
+    let emailData = {
+      displayName: userRecord.displayName,
+      email: userRecord.email,
         subject: `Nemacolin Inc Password Reset for ${userRecord.displayName}`,
       }
       return sendPasswordResetEmail(emailData)
@@ -250,7 +287,7 @@ app.post('/resetpassword', middleware, (req, res) => {
 app.post('/verifyemail', middleware, (req, res) => {
   const email = req.body.email
   const type = req.body.type
-
+  
   admin.auth().getUserByEmail(email)
     .then((userRecord) => {
       let emailData = {
@@ -267,6 +304,37 @@ app.post('/verifyemail', middleware, (req, res) => {
     })
     .catch((error) => {
       console.log('password error: ', error)
+      return res.status(500).send(error)
+    })
+})
+  
+app.post('/disableorreenableuser', middleware, (req, res) => {
+  const email = req.body.email
+  const action = req.body.action
+  admin.auth().getUserByEmail(email)
+    .then((userRecord) => {
+      return action === 'Disable' ? disableUser(userRecord) : reEnableUser(userRecord)
+    })
+    .then((userRecord) => {
+      return res.status(200).send(userRecord)
+    })
+    .catch((error) => {
+      console.log('delete user error: ', error)
+      return res.status(500).send(error)
+    })
+  })
+  
+  app.post('/deleteuser', middleware, (req, res) => {
+    const email = req.body.email
+    admin.auth().getUserByEmail(email)
+    .then((userRecord) => {
+      return deleteUser(userRecord)
+    })
+    .then((userRecord) => {
+      return res.status(200).send(userRecord)
+    })
+    .catch((error) => {
+      console.log('delete user error: ', error)
       return res.status(500).send(error)
     })
 })

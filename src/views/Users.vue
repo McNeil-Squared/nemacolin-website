@@ -7,7 +7,7 @@
       v-icon fas fa-plus
     v-layout(row wrap)
       v-flex(xs12 md4 v-for="(user, i) in users" :key="i" v-if="!loading")
-        v-card.mx-2
+        v-card(:class="[{disabledUser: user.disabled}]").mx-2
           v-card-title.pb-0(primary title)
             div.full-width.text-xs-center.mb-3
               h3.headline.mb-0.mx-auto {{ user.firstName }} {{ user.lastName }}
@@ -20,49 +20,28 @@
                 p #[span.font-weight-bold Role:] {{ user.role }}
           v-card-actions.justify-center
             v-btn(color="secondary" :to="user.profileLink") User Details
-            v-btn.white--text(color="caution" @click="disableUser(user)") Disable User
-            v-btn(color="primary" @click="deleteUser(user)") Delete User
+            v-btn.white--text(v-if="!user.disabled" color="caution" @click="confirmAction(user, 'Disable')") Disable User
+            v-btn.white--text(v-else color="caution" @click="confirmAction(user, 'Re-Enable')") Re-Enable User
+            v-btn(color="primary" @click="confirmAction(user, 'Delete')") Delete User
     v-layout(row wrap)
       v-flex(xs12 md4 offset-md4)
-        v-dialog(v-model="addUser" :width="width")
-          form.pa-3(@submit.prevent="submit" v-if="!loading" autocomplete="on")
-            h4.text-xs-center.my-2 Add User
-            template(v-for="(item, key) in addUsers")
-              template(v-if="key !=='mailing' && key !=='physical'")
-                template(v-if="((key ==='username' || key === 'position' || key ==='role') && addUsers.role.value === 'admin') || (key !=='username' || key !== 'position' || key !=='role')")
-                  template(v-if="item.type === 'input'")
-                    template(v-if="item.label === 'Password' || item.label === 'Confirm Password'")
-                      label(for="key") {{ item.label }}
-                      v-text-field(v-model="addUsers[key].value" :id="key" :error-messages="errors[key]" @input="validateField(key, item.label, addUsers[key].validations)" solo :disabled="key==='username'" type="password")
-                    template(v-else)
-                      label(for="key") {{ item.label }}
-                      v-text-field(v-model="addUsers[key].value" :id="key" :error-messages="errors[key]" @input="validateField(key, item.label, addUsers[key].validations)" solo :disabled="key==='username'")
-                  template(v-else)
-                    label(for="key") {{ item.label }}
-                    v-select(v-model="addUsers[key].value" :items="addUsers[key].options" :label="addUsers[key].label" solo append-icon="fas fa-sort-down")
-              template(v-else)
-                template(v-for="(subitem,key2) in item")
-                  template(v-if="subitem.type === 'input'")
-                    label(for="key2") {{ subitem.label }}
-                    v-text-field(v-model="item[key2].value" :id="key2" :error-messages="errors[key] ? errors[key][key2] : []" @input="validateField([key, key2], subitem.label, addUsers[key][key2].validations)" solo)
-                  template(v-else)
-                    label(for="key2") {{ subitem.label }}
-                    v-select(v-model="item[key2].value" :items="item[key2].options" item-text="label" item-value="value" :label="item[key2].label" solo append-icon="fas fa-sort-down")
-            div.text-xs-center
-              v-btn(v-if="status !== 'success'" @click="submit" color="primary" :loading="sending" :disabled="sending || $v.$invalid") Submit
-              //- v-btn(v-if="status !== 'success'" @click="submit" color="primary" :loading="sending") Submit
+        v-dialog(v-model="confirm" :width="width")
+          v-card.text-xs-center
+            v-alert.title.mt-0.adjust-icon(type="warning" color="error" icon="fas fa-exclamation-triangle" value="true") Confirm {{ action }} User {{ targetUser.firstName }} {{ targetUser.lastName }}
+            v-card-title
+              p.mx-auto.subheading(v-if="action === 'Disable'") Are you sure you want to disable the user {{ targetUser.firstName }} {{ targetUser.lastName }}?
+              p.mx-auto.subheading(v-else-if="action === 'Re-Enable'") Are you sure you want to Re-Enable the user {{ targetUser.firstName }} {{ targetUser.lastName }}?
+              p.mx-auto.subheading(v-else) Are you sure you want to delete the user {{ targetUser.firstName }} {{ targetUser.lastName }}?
+                br
+                | This action is irreversible.
+            v-card-actions.pb-4
+              v-btn.mx-auto(@click="action !== 'Delete' ? disableOrReEnableUser() : deleteUser()" color="primary" :loading="sending" :disabled="sending") Confirm
+              v-btn.mx-auto(@click="confirm = false" color="accent" v-show="!sending") Cancel
 </template>
 
 <script>
 import firebase from '../firebase.js'
 import axios from 'axios'
-import states from '../states.js'
-import { validationMixin } from 'vuelidate'
-import { required, sameAs, email, numeric, minLength, maxLength, helpers } from 'vuelidate/lib/validators'
-/* eslint-disable no-useless-escape */
-const name = helpers.regex('name', /^[a-zA-Z 0-9\.\,\-]*$/)
-const phone = helpers.regex('phone', /^[0-9]{3}\-[0-9]{3}\-[0-9]{4}$/)
-const password = helpers.regex('password', /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
 
 export default {
   data () {
@@ -70,60 +49,11 @@ export default {
       loading: true,
       width: 500,
       users: [],
-      errors: [],
+      confirm: false,
+      targetUser: {},
+      action: '',
       sending: false,
-      status: 'pending',
-      newUserData: {},
-      addUser: false,
-      addUsers: {
-        email: { label: 'Email', value: '', type: 'input', validations: ['required', 'email'] },
-        password: { label: 'Password', value: '', type: 'input', validations: ['required', 'password'] },
-        retypePassword: { label: 'Confirm Password', value: '', type: 'input', validations: ['required', 'sameAsPassword'] },
-        firstName: { label: 'First Name', value: '', type: 'input', validations: ['required', 'name'] },
-        lastName: { label: 'Last Name', value: '', type: 'input', validations: ['required', 'name'] },
-        phone: { label: 'Phone Number', value: '', type: 'input', validations: ['required', 'phone'] },
-        mailing: {
-          address: { label: 'Mailing Address', value: '', type: 'input', validations: ['required', 'name'] },
-          city: { label: 'Mailing City', value: '', type: 'input', validations: ['required', 'name'] },
-          state: { label: 'Mailing State', value: '', type: 'select', options: states, validations: ['required'] },
-          zip: { label: 'Mailing Zip Code', value: '', type: 'input', validations: ['required', 'numeric', 'minLength', 'maxLength'] }
-        },
-        physical: {
-          address: { label: 'Physical Address', value: '', type: 'input', validations: ['required', 'name'] },
-          city: { label: 'Physical City', value: '', type: 'input', validations: ['required', 'name'] },
-          state: { label: 'Physical State', value: '', type: 'select', options: states, validations: ['required'] },
-          zip: { label: 'Physical Zip Code', value: '', type: 'input', validations: ['required', 'numeric', 'minLength', 'maxLength'] }
-        },
-        username: { label: 'User Name', value: '', type: 'input', validations: ['required'] },
-        position: { label: 'Position', value: '', type: 'select', options: ['President', 'Vice-President', 'Secretary', 'Treasurer', 'Member', 'Support', 'Council', 'Vendor'], validations: ['required'] },
-        role: { label: 'System Role', value: '', type: 'select', options: ['user', 'admin'], validations: ['required'] }
-      }
-    }
-  },
-  mixins: [validationMixin],
-  validations: {
-    addUsers: {
-      email: { value: { required, email } },
-      password: { value: { required, password } },
-      retypePassword: { value: { required, sameAsPassword: sameAs(function () { return this.addUsers.password.value }) } },
-      firstName: { value: { required, name } },
-      lastName: { value: { required, name } },
-      phone: { value: { required, phone } },
-      mailing: {
-        address: { value: { required, name } },
-        city: { value: { required, name } },
-        state: { value: { required } },
-        zip: { value: { required, numeric, minLength: minLength(5), maxLength: maxLength(5) } }
-      },
-      physical: {
-        address: { value: { required, name } },
-        city: { value: { required, name } },
-        state: { value: { required } },
-        zip: { value: { required, numeric, minLength: minLength(5), maxLength: maxLength(5) } }
-      },
-      username: { value: { required } },
-      position: { value: { required } },
-      role: { value: { required } }
+      status: ''
     }
   },
   methods: {
@@ -139,7 +69,8 @@ export default {
               phone: firebaseData.phone,
               position: firebaseData.position,
               role: firebaseData.role,
-              profileLink: 'profile/' + firebaseData.username
+              profileLink: 'profile/' + firebaseData.username,
+              disabled: firebaseData.disabled
             }
             this.users.push(userCard)
           })
@@ -149,101 +80,73 @@ export default {
           this.loading = false
         })
     },
-    validateField (field, label, validations) {
-      if (typeof field === 'object') {
-        this.$v.addUsers[field[0]][field[1]].$touch()
-        if (!this.errors[field[0]]) { this.errors[field[0]] = {}; this.errors[field[0]][field[1]] = [] } else { this.errors[field[0]][field[1]] = [] }
-        validations.forEach((validation) => {
-          if (validation === 'required' && !this.$v.addUsers[field[0]][field[1]].value.required) { this.errors[field[0]][field[1]].push(`${label} is required.`) }
-          if (validation === 'email' && !this.$v.addUsers[field[0]][field[1]].value.email) { this.errors[field[0]][field[1]].push(`Please enter a valid ${label}.`) }
-          if (validation === 'password' && !this.$v.addUsers[field[0]][field[1]].value.password) { this.errors[field[0]][field[1]].push(`Password must be at least 8 characters long with 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character.`) }
-          if (validation === 'sameAsPassword' && !this.$v.addUsers[field[0]][field[1]].value.sameAsPassword) { this.errors[field[0]][field[1]].push(`Passwords do not match.`) }
-          if (validation === 'numeric' && !this.$v.addUsers[field[0]][field[1]].value.numeric) { this.errors[field[0]][field[1]].push(`${label} must be numbers only.`) }
-          if (validation === 'minLength' && !this.$v.addUsers[field[0]][field[1]].value.minLength) { this.errors[field[0]][field[1]].push(`${label} must be 5 characters long.`) }
-          if (validation === 'maxLength' && !this.$v.addUsers[field[0]][field[1]].value.maxLength) { this.errors[field[0]][field[1]].push(`${label} must be 5 characters long.`) }
-          if (validation === 'name' && !this.$v.addUsers[field[0]][field[1]].value.name) { this.errors[field[0]][field[1]].push(`${label} can only contain letters, numbers, spaces, commas, or periods.`) }
-          if (validation === 'phone' && !this.$v.addUsers[field[0]][field[1]].value.phone) { this.errors[field[0]][field[1]].push(`${label} must be in this format: 123-456-7890.`) }
-        })
-      } else {
-        this.$v.addUsers[field].$touch()
-        this.errors[field] = []
-        validations.forEach((validation) => {
-          if (validation === 'required' && !this.$v.addUsers[field].value.required) { this.errors[field].push(`${label} is required.`) }
-          if (validation === 'email' && !this.$v.addUsers[field].value.email) { this.errors[field].push(`Please enter a valid ${label}.`) }
-          if (validation === 'password' && !this.$v.addUsers[field].value.password) { this.errors[field].push(`Password must be at least 8 characters long with 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character.`) }
-          if (validation === 'sameAsPassword' && !this.$v.addUsers[field].value.sameAsPassword) { this.errors[field].push(`Passwords do not match.`) }
-          if (validation === 'numeric' && !this.$v.addUsers[field].value.numeric) { this.errors[field].push(`${label} must be numbers only.`) }
-          if (validation === 'minLength' && !this.$v.addUsers[field].value.minLength) { this.errors[field].push(`${label} must be 5 characters long.`) }
-          if (validation === 'maxLength' && !this.$v.addUsers[field].value.maxLength) { this.errors[field].push(`${label} must be 5 characters long.`) }
-          if (validation === 'name' && !this.$v.addUsers[field].value.name) { this.errors[field].push(`${label} can only contain letters, numbers, spaces, commas, or periods.`) }
-          if (validation === 'phone' && !this.$v.addUsers[field].value.phone) { this.errors[field].push(`${label} must be in this format: 123-456-7890.`) }
-        })
-      }
+    confirmAction (user, action) {
+      this.confirm = true
+      this.targetUser = user
+      this.action = action
+      this.status = ''
     },
-    buildUsername () {
-      if (Object.keys(this.addUsers).length !== 0) {
-        let wholeName = this.addUsers.firstName.value + this.addUsers.lastName.value
-        let filteredName = wholeName.split('').filter(letter => /[a-zA-Z0-9]/.test(letter)).join('')
-        return filteredName
+    disableOrReEnableUser () {
+      this.sending = true
+      this.status = ''
+      let userData = {
+        action: this.action,
+        email: this.targetUser.email,
+        apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY
       }
-    },
-    submit () {
-      if (!this.$v.$invalid) {
-        this.sending = true
-        for (let item in this.addUsers) {
-          if (item === 'mailing' || item === 'physical') {
-            if (!this.newUserData['mailing']) { this.newUserData['mailing'] = {} }
-            if (!this.newUserData['physical']) { this.newUserData['physical'] = {} }
-            for (let subitem in this.addUsers[item]) {
-              this.newUserData[item][subitem] = this.addUsers[item][subitem].value
-            }
-          } else {
-            this.newUserData[item] = this.addUsers[item].value
-          }
-        }
-
-        let userData = {
-          email: this.newUserData.email,
-          emailVerified: false,
-          password: this.addUsers.password.value,
-          displayName: `${this.newUserData.firstName} ${this.newUserData.lastName}`,
-          apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY
-        }
-
-        axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/adduser', userData)
-          .then(response => {
-            if (response.status === 200) {
-              console.log('database call')
-              firebase.firestore().collection('users').doc(response.data.uid).set(this.newUserData)
-                .then(() => {
-                  console.log()
-                  this.status = 'success'
-                  this.sending = false
-                })
-                .catch(error => {
-                  console.log('database error: ', error)
-                  this.status = 'fail'
-                  this.sending = false
-                })
-            } else {
-              console.log('other axios error: ', response)
-              this.status = 'fail'
+      axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/disableorreenableuser', userData)
+        .then((userRecord) => {
+          let disable
+          this.action === 'Disable' ? disable = true : disable = false
+          console.log(userRecord)
+          firebase.firestore().collection('users').doc(userRecord.data.uid).update({ disabled: disable })
+            .then(() => {
               this.sending = false
-            }
-          }).catch((error) => {
-            console.log('axios error: ', error.response)
-            this.status = 'fail'
-            this.sending = false
-          })
-      }
-    }
-  },
-  watch: {
-    'addUsers.firstName.value': function () {
-      this.addUsers.username.value = this.buildUsername()
+              let userToUpdate = this.users.findIndex((user) => { return user.email === this.targetUser.email })
+              this.users[userToUpdate].disabled = disable
+              this.confirm = false
+              this.status = 'success'
+            })
+            .catch((error) => {
+              console.log('Database error: ', error)
+              this.sending = false
+              this.status = 'error'
+            })
+        })
+        .catch((error) => {
+          console.log('disable/re-enable user error: ', error)
+          this.sending = false
+          this.status = 'error'
+        })
     },
-    'addUsers.lastName.value': function () {
-      this.addUsers.username.value = this.buildUsername()
+    deleteUser () {
+      this.sending = true
+      this.status = ''
+      let userData = {
+        email: this.targetUser.email,
+        apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY
+      }
+      axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/deleteuser', userData)
+        .then((userRecord) => {
+          firebase.firestore().collection('users').doc(userRecord.data.uid).delete()
+            .then(() => {
+              this.sending = false
+              let userToDelete = this.users.findIndex((user) => { return user.email === this.targetUser.email })
+              this.users.splice(userToDelete, 1)
+              this.confirm = false
+              this.status = 'success'
+            })
+            .catch((error) => {
+              console.log('Database error: ', error)
+              this.sending = false
+              this.status = 'error'
+            })
+        })
+        .catch((error) => {
+          console.log('delete user error: ', error.response)
+          this.sending = false
+          this.status = 'error'
+        })
     }
   },
   created () {
@@ -254,11 +157,14 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
   .full-width {
     width: 100%;
   }
   .v-btn--bottom:not(.v-btn--absolute) {
     bottom: 60px;
+  }
+  .adjust-icon >>> .v-icon {
+    margin-bottom: 4px;
   }
 </style>
