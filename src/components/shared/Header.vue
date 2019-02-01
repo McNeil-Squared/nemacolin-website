@@ -11,7 +11,7 @@
         v-btn(slot="activator" color='primary' flat) Services
           v-icon.ml-2.mb-1(color='primary') fas fa-caret-down
         v-list
-          v-list-tile(v-for="item in dropdownMenuItems" :key="item.name" @click="" :to="item.to")
+          v-list-tile(v-for="item in dropdownMenuItems" :key="item.name" :to="item.to")
             v-list-tile-title {{ item.name }}
       v-btn.hidden-sm-and-down(:color='item.color' flat v-for="item in menuItems" :key="item.name" :to="item.to") {{ item.name }}
       v-btn.hidden-sm-and-down(color="accent" flat v-if="user == null" to='/login') Login
@@ -19,15 +19,13 @@
         v-btn(slot="activator" color='secondary' flat) Hello {{ user.displayName }}
           v-icon.ml-2.mb-1(color='secondary') fas fa-caret-down
         v-list
-          v-list-tile(v-for="(item,i) in dropdownUserItems" :key="i" @click="doTheThing(item.action)" :to="item.to")
+          v-list-tile(v-for="(item,i) in dropdownUserItems" :key="i" :to="item.to")
             v-list-tile-title {{ item.name }}
       v-toolbar-side-icon.hidden-md-and-up(@click="toggleNavDrawer")
         v-icon fas fa-bars
 </template>
 
 <script>
-import firebase from 'firebase'
-
 export default {
   data () {
     return {
@@ -50,19 +48,12 @@ export default {
     toggleNavDrawer () {
       this.$store.dispatch('toggleDrawer')
     },
-    doTheThing (action) {
-      if (action === 'logout') {
-        firebase.auth().signOut()
-          .then(this.$store.dispatch('removeUserSessionData'))
-          .catch(error => console.log(error))
-      }
-    },
     buildUserMenu () {
       let items = [
         { name: 'Dashboard', action: '', restricted: 'no', to: '/dashboard' },
         { name: 'User Profile', action: '', restricted: 'no', to: `/profile/${this.user.username}` },
         { name: 'User Management', action: '', restricted: 'admin', to: '/users' },
-        { name: 'Logout', action: 'logout', restricted: 'no', to: '' }
+        { name: 'Logout', action: 'logout', restricted: 'no', to: '/logout' }
       ]
       if (this.user != null) {
         this.dropdownUserItems = []
