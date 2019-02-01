@@ -1,6 +1,6 @@
 <template lang="pug">
   div
-    EmailVerification.text-xs-center.mb-3
+    Email-Verification-Message.text-xs-center.mb-3
     v-layout(row wrap)
       v-flex(xs12 md4 offset-md4)
         h2.text-xs-center.primary--text {{ username ? 'User Profile' : 'Add New User' }}
@@ -36,6 +36,7 @@
             v-btn(v-if="status !== 'success' && !notFound" @click="submit" color="primary" :loading="sending" :disabled="sending || $v.$invalid") Submit
         v-alert(v-if="status === 'success' && !sending" type="success" icon="fas fa-check" value="true") Success!&nbsp;&nbsp;Your profile has been updated.
         v-alert(v-if="status === 'success' && emailUpdated && !sending" type="success" icon="fas fa-check" value="true") Success!&nbsp;&nbsp;Your email address has been updated.&nbsp;&nbsp;Please check your new email for a verification message.&nbsp;&nbsp;You must verify your new email address before continuing.
+        v-alert.text-xs-left(v-if="status === 'reset request success'" type="success" icon="fas fa-check" value="true") Success!&nbsp;&nbsp;Your password reset request has been received.&nbsp;&nbsp;Your request will be processed within 24 hours.&nbsp;&nbsp;Once your reqest has been processed you will receive an email with your new password.
         v-alert(v-if="status === 'error' && !sending" type="error" icon="fas fa-times" value="true") Bummer!&nbsp;&nbsp;There was an error and your profile was not updated.&nbsp;&nbsp;Please try again.&nbsp;&nbsp;If you see this message again, please #[a(href="mailto:info@nemacolininc.com") email us] and let us know.
         v-alert(v-if="status === 'emailInUseError' && !sending" type="error" icon="fas fa-times" value="true") The email: {{ user.email.value }}, is already in use by another user.
         v-dialog(v-model="showReauthticationModal" persistant width="400")
@@ -43,9 +44,11 @@
             h4.mt-2.mb-4.text-xs-left Hello, It looks like you haven't logged in for awhile.&nbsp;&nbsp;Please re-enter your password to complete the update.
             label.d-block.text-xs-left(for="password") Password
             v-text-field#password(v-model="reauthenticationPassword"  placeholder="Password" :error-messages="errors['reauthenticationPassword']" @input="validateField('reauthenticationPassword', 'Password', passwordValidations)" solo type="password")
-            v-btn(v-if="status != 'success'" @click="reauthenticate(currentUserEmail, reauthenticationPassword, updatedUserdata)" color="primary" :loading="sendingPassword" :disabled="sendingPassword || $v.$invalid") Submit
+            div.text-xs-center
+              v-btn(v-if="status != 'success'" @click="reauthenticate(currentUserEmail, reauthenticationPassword, updatedUserdata)" color="primary" :loading="sendingPassword" :disabled="sendingPassword || $v.$invalid") Submit
+              p.mt-3.link(@click="showForgotPasswordModal") I forgot my password.
             v-alert(v-if="showPasswordError && !sendingPassword" type="error" icon="fas fa-times" value="true") Incorrect password.
-            //- router-link.mt-3.link(tag="p" to="/resetpassword") I forgot my password.
+        Forgot-Password-Modal(:forgotPasswordModal="forgotPasswordModal" @closeForgotPasswordModal="forgotPasswordModal = false" @resetRequestSuccess="status = 'reset request success'")
 </template>
 
 <script>
@@ -55,7 +58,9 @@ import states from '../states.js'
 import { mapState } from 'vuex'
 import { validationMixin } from 'vuelidate'
 import { required, requiredIf, sameAs, email, numeric, minLength, maxLength, helpers } from 'vuelidate/lib/validators'
+
 import EmailVerification from '../components/EmailVerification'
+import ForgotPassword from '../components/ForgotPassword'
 
 /* eslint-disable no-useless-escape */
 const name = helpers.regex('name', /^[a-zA-Z 0-9\.\,\-]*$/)
@@ -79,14 +84,15 @@ export default {
       reauthenticationPassword: '',
       passwordValidations: ['required'],
       sendingPassword: false,
-      showPasswordError: false
+      showPasswordError: false,
+      forgotPasswordModal: false
     }
   },
   props: {
     username: { type: String, required: false },
     type: { type: String, required: true }
   },
-  components: { EmailVerification },
+  components: { 'Email-Verification-Message': EmailVerification, 'Forgot-Password-Modal': ForgotPassword },
   mixins: [validationMixin],
   validations: {
     user: {
@@ -333,6 +339,10 @@ export default {
         let filteredName = wholeName.split('').filter(letter => /[a-zA-Z0-9]/.test(letter)).join('')
         return filteredName
       }
+    },
+    showForgotPasswordModal () {
+      this.forgotPasswordModal = true
+      this.showReauthticationModal = false
     }
   },
   computed: {

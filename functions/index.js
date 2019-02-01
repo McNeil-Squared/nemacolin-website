@@ -7,6 +7,7 @@ const middleware = require('./middleware')
 const emailVerification = require('./emails/emailVerification')
 const contactForm = require('./emails/contactForm')
 const passwordReset = require('./emails/passwordReset')
+const passwordResetRequest = require('./emails/passwordResetRequest')
 
 
 // development variables
@@ -140,6 +141,41 @@ const sendPasswordResetEmail = (emailData) => {
       .catch((error) => {
         reject(error)
       })
+  })
+}
+
+const sendPasswordResetRequest = (emailData) => {
+  return new Promise((resolve, reject) => {
+
+    if (emailData.disabled) {
+      let error = new Error()
+      error.code = 'auth/user-disabled'
+      reject(error)
+    } else {
+      let templateData = {
+        greeting: ['Angie'],
+        primaryMessage: ['You have a new password reset request', 'https://res.cloudinary.com/dwfj8jbmf/image/upload/v1547314864/primary.jpg', 'computerdog', 'From:'],
+        userInfo: ['Name:', emailData.displayName, 'Email:', emailData.email],
+        closing: ['', '', '']
+      }
+  
+      const mailOptions = {
+        from: emailData.email,
+        to: 'info@nemacolininc.com',
+        subject: 'Password Reset Request',
+        html: passwordResetRequest.build(templateData)
+      }
+        
+      return mailTransport.sendMail(mailOptions, (error, info) => {
+        if (info) {
+          resolve()
+        }
+        else {
+          console.log(error)
+          reject(error)
+        }
+      })
+    }
   })
 }
 
@@ -298,6 +334,22 @@ app.post('/resetpassword', middleware, (req, res) => {
     })
 })
 
+app.post('/forgotpassword', middleware, (req, res, next) => {
+  const email = req.body.email
+  admin.auth().getUserByEmail(email)
+    .then((userRecord) => {
+      return sendPasswordResetRequest(userRecord)
+    })
+    .then(() => {
+      console.log('success')
+      return res.status(200).send('success')
+    })
+    .catch((error) => {
+      console.log('forgot password error: ', error)
+      return res.status(500).send(error)
+    })
+})
+
 app.post('/verifyemail', middleware, (req, res) => {
   const email = req.body.email
   const type = req.body.type
@@ -336,11 +388,11 @@ app.post('/disableorreenableuser', middleware, (req, res) => {
       console.log('delete user error: ', error)
       return res.status(500).send(error)
     })
-  })
+})
   
-  app.post('/deleteuser', middleware, (req, res) => {
-    const email = req.body.email
-    admin.auth().getUserByEmail(email)
+app.post('/deleteuser', middleware, (req, res) => {
+  const email = req.body.email
+  admin.auth().getUserByEmail(email)
     .then((userRecord) => {
       return deleteUser(userRecord)
     })
@@ -352,6 +404,11 @@ app.post('/disableorreenableuser', middleware, (req, res) => {
       return res.status(500).send(error)
     })
 })
+
+// app.use((error, req, res, next) => {
+//   console.log('error handler')
+//   return res.status(500).send(error)
+// })
 
 // Expose Express API as a single Cloud Function:
 exports.widgets = functions.https.onRequest(app)
