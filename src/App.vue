@@ -4,7 +4,7 @@
     app-Navdrawer
     v-content
       v-container(fluid)
-        v-fade-transition
+        transition(name="fade" mode="out-in")
           router-view
     app-footer
 </template>
@@ -54,5 +54,18 @@ export default {
 
   .disabledUser {
     border: 3px solid #ba1b1d
+  }
+
+  .fade-enter {
+    opacity: 0;
+  }
+
+  .fade-enter-active {
+    transition: opacity .3s;
+  }
+
+  .fade-leave-active {
+    transition: opacity .3s;
+    opacity: 0;
   }
 </style>
