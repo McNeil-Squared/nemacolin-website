@@ -71,6 +71,6 @@ export default {
 
   /*highlight form fields with errors*/
   .form-field--errors .v-input__slot {
-    border: 1px solid #ba1b1d;
+    border: 2px solid #ba1b1d;
   }
 </style>

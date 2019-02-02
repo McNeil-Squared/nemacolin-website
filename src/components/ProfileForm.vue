@@ -16,10 +16,10 @@
                 template(v-if="item.type === 'input'")
                   template(v-if="key === 'password' || key === 'retypePassword'")
                     label(for="key") {{ item.label }}
-                    v-text-field(v-model="user[key].value" :id="key" :error-messages="errors[key]" @input="validateField(key, item.label, user[key].validations)" solo :disabled="key==='username'" type="password")
+                    v-text-field(v-model="user[key].value" :id="key" :class="{'form-field--errors': areErrors(key)}" :error-messages="errors[key]" @input="validateField(key, item.label, user[key].validations)" solo :disabled="key==='username'" type="password")
                   template(v-else)
                     label(for="key") {{ item.label }}
-                    v-text-field(v-model="user[key].value" :id="key" :error-messages="errors[key]" @input="validateField(key, item.label, user[key].validations)" solo :disabled="key==='username'")
+                    v-text-field(v-model="user[key].value" :id="key" :class="{'form-field--errors': areErrors(key)}" :error-messages="errors[key]" @input="validateField(key, item.label, user[key].validations)" solo :disabled="key==='username'")
                     v-alert.mb-4(v-if="username" :value="item.label === 'Email'" icon="fas fa-info-circle" type="info") Note: Your email address is used to login to the website, so if you change your email please remember to use your new email when you login.
                 template(v-else)
                   label(for="key") {{ item.label }}
@@ -28,7 +28,7 @@
               template(v-for="(subitem,key2) in item")
                 template(v-if="subitem.type === 'input'")
                   label(for="key2") {{ subitem.label }}
-                  v-text-field(v-model="item[key2].value" :id="key2" :error-messages="errors[key] ? errors[key][key2] : []" @input="validateField([key, key2], subitem.label, user[key][key2].validations)" solo)
+                  v-text-field(v-model="item[key2].value" :id="key2" :class="{'form-field--errors': areErrors([key,key2])}" :error-messages="errors[key] ? errors[key][key2] : []" @input="validateField([key, key2], subitem.label, user[key][key2].validations)" solo)
                 template(v-else)
                   label(for="key2") {{ subitem.label }}
                   v-select(v-model="item[key2].value" :items="item[key2].options" item-text="label" item-value="value" :label="item[key2].label" solo append-icon="fas fa-sort-down")
@@ -43,7 +43,7 @@
           form.pa-3(@submit.prevent="submit" autocomplete="on")
             h4.mt-2.mb-4.text-xs-left Hello, It looks like you haven't logged in for awhile.&nbsp;&nbsp;Please re-enter your password to complete the update.
             label.d-block.text-xs-left(for="password") Password
-            v-text-field#password(v-model="reauthenticationPassword"  placeholder="Password" :error-messages="errors['reauthenticationPassword']" @input="validateField('reauthenticationPassword', 'Password', passwordValidations)" solo type="password")
+            v-text-field#password(v-model="reauthenticationPassword"  placeholder="Password" :class="{'form-field--errors': areErrors('reauthenticationPassword')}" :error-messages="errors['reauthenticationPassword']" @input="validateField('reauthenticationPassword', 'Password', passwordValidations)" solo type="password")
             div.text-xs-center
               v-btn(v-if="status != 'success'" @click="reauthenticate(currentUserEmail, reauthenticationPassword, updatedUserdata)" color="primary" :loading="sendingPassword" :disabled="sendingPassword || $v.$invalid") Submit
               p.mt-3.link(@click="showForgotPasswordModal") I forgot my password.
@@ -73,7 +73,7 @@ export default {
       loading: true,
       notFound: false,
       user: {},
-      errors: [],
+      errors: {},
       currentUserEmail: '',
       currentUserUsername: '',
       sending: false,
@@ -121,6 +121,15 @@ export default {
     reauthenticationPassword: { required: requiredIf(function () { return this.showReauthticationModal }) }
   },
   methods: {
+    areErrors (field) {
+      if (typeof field === 'string') {
+        return this.errors[field] ? this.errors[field].length > 0 : false
+      } else {
+        // if this.errors[field[0]] is undefined return false, else if his.errors[field[0]][field[1]] is undefined return false else return this.errors[field[0]][field[1]].length > 0
+        return !this.errors[field[0]] ? false
+          : !this.errors[field[0]][field[1]] ? false : this.errors[field[0]][field[1]].length > 0
+      }
+    },
     getUserData () {
       let dbQuery = this.loggedinUser.role === 'admin' ? firebase.firestore().collection('users').where('username', '==', this.username).get() : firebase.firestore().collection('users').doc(this.$store.getters.user.uid).get()
       dbQuery.then((result) => {
