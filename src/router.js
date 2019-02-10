@@ -22,6 +22,7 @@ const router = new Router({
     { path: '/profile/:username', name: 'userprofile', component: () => import('./views/Profile.vue'), meta: { title: 'User Profile' }, beforeEnter (to, from, next) { isAuthorized(to, next) }, props: true },
     { path: '/users', name: 'usermanagement', component: () => import('./views/Users.vue'), meta: { title: 'User Management' }, beforeEnter (to, from, next) { isAuthorized(to, next) } },
     { path: '/adduser', name: 'adduser', component: () => import('./views/AddUser.vue'), meta: { title: 'Add A New User' }, beforeEnter (to, from, next) { isAuthorized(to, next) } },
+    { path: '/files', name: 'files', component: () => import('./views/Files.vue'), meta: { title: 'Nemacolin Files' }, beforeEnter (to, from, next) { isLoggedin(next) } },
     { path: '/fourohone/:type', name: 'fourohone', component: () => import('./views/FourOhOne.vue'), meta: { title: 'Access Denied' }, props: true },
     { path: '*', name: '404', component: () => import('./views/FourohFour.vue'), meta: { title: '404 - Page Not Found' } }
   ]

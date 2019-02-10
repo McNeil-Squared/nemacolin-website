@@ -2,7 +2,7 @@
   div
     h3.secondary--text.text-xs-center.mb-2 Upcoming Meetings
     v-card
-      v-data-table#time-table.text-xs-center(:headers="headers" :items="entries" sort-icon="fas fa-arrow-up" prev-icon="fas fa-chevron-left" next-icon="fas fa-chevron-right")
+      v-data-table#meeting-table.text-xs-center(:headers="headers" :items="entries" sort-icon="fas fa-arrow-up" prev-icon="fas fa-chevron-left" next-icon="fas fa-chevron-right")
         template(slot="items" slot-scope="props")
           td.text-xs-left {{ props.item.name }}
           td {{ props.item.date }}
