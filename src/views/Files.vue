@@ -1,6 +1,8 @@
 <template lang="pug">
   div
     h3.headline.text-xs-center.mb-4.primary--text Nemacolin Files
+    v-btn(fab fixed bottom right color="primary" @click="toggleAddFileModal")
+      v-icon fas fa-plus
     v-layout(row wrap)
       v-flex(xs12 md8 offset-md2)
         v-card
@@ -18,26 +20,27 @@
                     v-list-tile-sub-title {{ file.uploaded }}
                 v-list-tile-action(v-if="role === 'admin'")
                   v-btn(color="primary" @click="deleteFile(file.docRef)") Delete
-        //- a(:href="file.path") {{ file.name }}
-        //- v-btn(color="primary" @click="getFiles") Get Files
-        //- input(type="file" id="file" ref="file" @change="fileChange()")
-        //- v-btn(color="primary" @click="uploadFile()") Upload File
+    AddFile(:folderList="folderList")
 </template>
 
 <script>
 import firebase from '../firebase.js'
 import { mapState } from 'vuex'
 
+import AddFile from '../components/AddFile'
+
 export default {
   data () {
     return {
       documents: [],
-      file: '',
-      upload: { name: '', file: '' }
+      showAddFileModal: false,
+      folderList: []
     }
   },
+  components: { AddFile },
   methods: {
     getFiles () {
+      this.documents = []
       firebase.firestore().collection('files').get()
         .then((result) => {
           result.forEach(file => {
@@ -47,29 +50,15 @@ export default {
               let folder = this.documents.find(folder => folder.name === fileData.folder)
               folder.files.push({ name: fileData.name, uploaded: uploaded, url: fileData.url, docRef: fileData.docRef })
             } else {
+              this.folderList.push(fileData.folder)
               this.documents.push({ name: fileData.folder, files: [ { name: fileData.name, uploaded: uploaded, url: fileData.url, docRef: fileData.docRef } ] })
             }
           })
         })
         .catch((error) => { console.log(error) })
     },
-    fileChange () {
-      this.file = this.$refs.file.files[0]
-    },
-    uploadFile () {
-      let storageRef = firebase.storage().ref(this.file.name)
-      let metadata = { title: 'Landlord Application' }
-      storageRef.put(this.file, metadata)
-        .then((snapshot) => {
-          snapshot.ref.getDownloadURL()
-            .then((url) => {
-              console.log(url)
-            })
-        })
-      console.log(storageRef.name)
-    },
-    deleteFile (docRef) {
-      console.log(docRef)
+    toggleAddFileModal () {
+      this.$store.dispatch('toggleAddFileModal')
     }
   },
   computed: {
@@ -83,3 +72,12 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.v-btn--bottom:not(.v-btn--absolute) {
+    bottom: 60px;
+  }
+.adjust-icon >>> .v-icon {
+  margin-bottom: 4px;
+}
+</style>

@@ -11,6 +11,7 @@ export default new Vuex.Store({
     navDrawer: false,
     user: null,
     resetPasswordModal: false,
+    addFileModal: false,
     targetUser: { firstName: '', lastName: '' }
   },
   getters: {
@@ -37,6 +38,9 @@ export default new Vuex.Store({
     },
     toggleResetPasswordModal (state) {
       state.resetPasswordModal = !state.resetPasswordModal
+    },
+    toggleAddFileModal (state) {
+      state.addFileModal = !state.addFileModal
     },
     setTargetUser (state, user) {
       state.targetUser = user
@@ -68,6 +72,9 @@ export default new Vuex.Store({
     },
     toggleResetPasswordModal ({ commit }) {
       commit('toggleResetPasswordModal')
+    },
+    toggleAddFileModal ({ commit }) {
+      commit('toggleAddFileModal')
     },
     setTargetUser ({ commit }, user) {
       commit('setTargetUser', user)
