@@ -2,16 +2,22 @@
   div
     h3.headline.text-xs-center.mb-4.primary--text Nemacolin Files
     v-layout(row wrap)
-      v-flex(xs12 md6 v-for="(folder, key) in folders" :key="key")
-        h3.secondary--text.text-xs-center.mb-2 {{ key }}
+      v-flex(xs12 md8 offset-md2)
         v-card
-          v-data-table.files-table.text-xs-center(:headers="folder.headers" :items="folder.entries" sort-icon="fas fa-arrow-up" prev-icon="fas fa-chevron-left" next-icon="fas fa-chevron-right")
-            template(slot="items" slot-scope="props")
-              td.text-xs-left
-                a(:href="props.item.url" target="new") {{ props.item.name }}
-              td {{ props.item.uploaded }}
-              td(v-if="role === 'admin'")
-                v-btn(color="primary") Delete
+          v-list(two-line)
+            v-list-group(v-for="folder in documents" :key="folder.name" prepend-icon="far fa-folder")
+              v-list-tile(slot="activator")
+                v-list-tile-content
+                  v-list-tile-title {{ folder.name }}
+              v-list-tile(v-for="file in folder.files" :key="file.name")
+                v-list-tile-avatar
+                  v-icon(color="primary") far fa-file-pdf
+                v-list-tile-content
+                  a(:href="file.url" target="new")
+                    v-list-tile-title.secondary--text {{ file.name }}
+                    v-list-tile-sub-title {{ file.uploaded }}
+                v-list-tile-action(v-if="role === 'admin'")
+                  v-btn(color="primary" @click="deleteFile(file.docRef)") Delete
         //- a(:href="file.path") {{ file.name }}
         //- v-btn(color="primary" @click="getFiles") Get Files
         //- input(type="file" id="file" ref="file" @change="fileChange()")
@@ -22,23 +28,10 @@
 import firebase from '../firebase.js'
 import { mapState } from 'vuex'
 
-let headers = [
-  { text: 'Name', value: 'name', align: 'left', sortable: false },
-  { text: 'Uploaded', value: 'uploaded', align: 'center', sortable: false },
-  { text: 'Actions', value: 'actions', align: 'center', sortable: false }
-]
-
-// folders: {
-//   folderName: [
-//     { name: name, uploaded: uploaded},
-//     { name: name, uploaded: uploaded}
-//   ]
-// }
-
 export default {
   data () {
     return {
-      folders: {},
+      documents: [],
       file: '',
       upload: { name: '', file: '' }
     }
@@ -48,29 +41,19 @@ export default {
       firebase.firestore().collection('files').get()
         .then((result) => {
           result.forEach(file => {
-            let folders = {}
             let fileData = file.data()
-            let timestamp = new Date(fileData.uploaded.seconds * 1000)
-            let uploaded = `${timestamp.getMonth() + 1}-${timestamp.getDay() + 1}-${timestamp.getFullYear()}`
-            if (folders.hasOwnProperty(fileData.folder)) {
-              folders[fileData.folder].entries.push({ name: fileData.name, uploaded: fileData.uploaded, url: fileData.url })
+            let uploaded = new Date(fileData.uploaded.seconds * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+            if (this.documents.find(folder => folder.name === fileData.folder)) {
+              let folder = this.documents.find(folder => folder.name === fileData.folder)
+              folder.files.push({ name: fileData.name, uploaded: uploaded, url: fileData.url, docRef: fileData.docRef })
             } else {
-              folders[fileData.folder] = { headers: headers, entries: [] }
-              folders[fileData.folder].entries.push({ name: fileData.name, uploaded: uploaded, url: fileData.url })
+              this.documents.push({ name: fileData.folder, files: [ { name: fileData.name, uploaded: uploaded, url: fileData.url, docRef: fileData.docRef } ] })
             }
-            this.folders = folders
           })
         })
         .catch((error) => { console.log(error) })
-      // let storageRef = firebase.storage().ref('ordinances.pdf')
-      // this.file.name = storageRef.name
-      // storageRef.getDownloadURL()
-      //   .then((url) => {
-      //     this.file.path = url
-      //   })
     },
     fileChange () {
-      // console.log(this.$refs.file.files[0])
       this.file = this.$refs.file.files[0]
     },
     uploadFile () {
@@ -84,6 +67,9 @@ export default {
             })
         })
       console.log(storageRef.name)
+    },
+    deleteFile (docRef) {
+      console.log(docRef)
     }
   },
   computed: {
@@ -97,15 +83,3 @@ export default {
   }
 }
 </script>
-
-<style>
-  .files-table th:nth-of-type(1n) {
-    width: 70%;
-  }
-  .files-table th:nth-of-type(2n) {
-    width: 20%;
-  }
-  .files-table th:nth-of-type(3n) {
-    width: 10%;
-  }
-</style>
