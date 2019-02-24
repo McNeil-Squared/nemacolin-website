@@ -21,7 +21,7 @@
       v-text-field#name.d-inline-block.mr-1(v-model="tags[2]" placeholder="Tag Name" solo)
       v-text-field#name.d-inline-block.ml-1(v-model="tags[3]" placeholder="Tag Name" solo)
       v-btn(color="primary" @click="uploadFile" :loading="uploadingFile" :disabled="uploadingFile || $v.$invalid") Upload File
-      v-btn.mx-3(@click="toggleAddFileModal" color="accent" :disabled="!uploadingFile") Cancel
+      v-btn.mx-3(@click="toggleAddFileModal" color="accent" :disabled="uploadingFile") Cancel
       v-alert(v-if="error && !uploadingFile" type="error" icon="fas fa-times" value="true") It looks like something went wrong.&nbsp;&nbsp;Please re-submit.
 </template>
 
@@ -63,12 +63,19 @@ export default {
       document.getElementById('file').click()
     },
     addFile () {
-      console.log(this.$refs.file.files[0])
       this.file = this.$refs.file.files[0]
     },
     clearAddFolderField () {
       this.showAddFolderField = false
       this.newFolder = ''
+    },
+    resetState () {
+      this.uploadingFile = false
+      this.name = ''
+      this.folder = ''
+      this.newFolder = ''
+      this.file = ''
+      this.tags = ['', '', '', '']
     },
     areErrors (field) {
       return this.errors[field] ? this.errors[field].length > 0 : false
@@ -83,30 +90,37 @@ export default {
     uploadFile () {
       if (!this.$v.$invalid) {
         this.uploadingFile = true
-        let storageRef = firebase.storage().ref().child(`${this.folder}/${this.file.name}`)
+        let docRef = this.folder === '' ? `${this.newFolder}/${this.file.name}` : `${this.folder}/${this.file.name}`
+        let databaseDocRef = docRef.replace('/', '-')
+        let storageRef = firebase.storage().ref().child(docRef)
         storageRef.put(this.file)
           .then((snapshot) => {
             snapshot.ref.getDownloadURL()
               .then((url) => {
                 let folder = this.showAddFolderField ? this.newFolder : this.folder
                 let fileData = { docRef: storageRef.name, folder: folder, name: this.name, url: url, tags: this.tags, uploaded: firebase.firestore.Timestamp.fromDate(new Date()) }
-                firebase.firestore().collection('files').add(fileData)
+                firebase.firestore().collection('files').doc(databaseDocRef).set(fileData)
                   .then(() => {
                     this.$parent.getFiles()
-                    this.uploadingFile = false
+                    this.resetState()
                     this.toggleAddFileModal()
                   })
                   .catch((error) => {
                     this.uploadingFile = false
                     this.error = true
-                    console.log(error)
+                    console.log('file database error: ', error)
                   })
               })
               .catch((error) => {
                 this.uploadingFile = false
                 this.error = true
-                console.log(error)
+                console.log('get url reference error: ', error)
               })
+          })
+          .catch((error) => {
+            this.uploadingFile = false
+            this.error = true
+            console.log('file upload error: ', error)
           })
       }
     },
