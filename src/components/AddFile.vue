@@ -64,6 +64,7 @@ export default {
     },
     addFile () {
       this.file = this.$refs.file.files[0]
+      console.log(this.file.name)
     },
     clearAddFolderField () {
       this.showAddFolderField = false
@@ -98,7 +99,7 @@ export default {
             snapshot.ref.getDownloadURL()
               .then((url) => {
                 let folder = this.showAddFolderField ? this.newFolder : this.folder
-                let fileData = { docRef: storageRef.name, folder: folder, name: this.name, url: url, tags: this.tags, uploaded: firebase.firestore.Timestamp.fromDate(new Date()) }
+                let fileData = { file: this.file.name, docRef: docRef, folder: folder, name: this.name, url: url, tags: this.tags, uploaded: firebase.firestore.Timestamp.fromDate(new Date()) }
                 firebase.firestore().collection('files').doc(databaseDocRef).set(fileData)
                   .then(() => {
                     this.$parent.getFiles()

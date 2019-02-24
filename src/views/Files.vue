@@ -1,9 +1,11 @@
 <template lang="pug">
   div
     h3.headline.text-xs-center.mb-4.primary--text Nemacolin Files
+    div.text-xs-center.my-2(v-if="loading")
+      v-icon.loading fas fa-sync
     v-btn(fab fixed bottom right color="primary" @click="toggleAddFileModal")
       v-icon fas fa-plus
-    v-layout(row wrap)
+    v-layout(row wrap v-if="!loading")
       v-flex(xs12 md8 offset-md2)
         v-card
           v-list(two-line)
@@ -19,8 +21,9 @@
                     v-list-tile-title.secondary--text {{ file.name }}
                     v-list-tile-sub-title {{ file.uploaded }}
                 v-list-tile-action(v-if="role === 'admin'")
-                  v-btn(color="primary" @click="deleteFile(file.docRef)") Delete
+                  v-btn(color="primary" @click="toggleDeleteFileModal(file)") Delete
     AddFile(:folderList="folderList")
+    ConfirmDeletion(type="file", :target="targetFile" :data="targetData")
 </template>
 
 <script>
@@ -28,16 +31,20 @@ import firebase from '../firebase.js'
 import { mapState } from 'vuex'
 
 import AddFile from '../components/AddFile'
+import ConfirmDeletion from '../components/ComfirmDeletion'
 
 export default {
   data () {
     return {
+      loading: true,
       documents: [],
       showAddFileModal: false,
-      folderList: []
+      folderList: [],
+      targetFile: {},
+      targetData: {}
     }
   },
-  components: { AddFile },
+  components: { AddFile, ConfirmDeletion },
   methods: {
     getFiles () {
       this.documents = []
@@ -48,17 +55,44 @@ export default {
             let uploaded = new Date(fileData.uploaded.seconds * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
             if (this.documents.find(folder => folder.name === fileData.folder)) {
               let folder = this.documents.find(folder => folder.name === fileData.folder)
-              folder.files.push({ name: fileData.name, uploaded: uploaded, url: fileData.url, docRef: fileData.docRef })
+              folder.files.push({ name: fileData.name, uploaded: uploaded, url: fileData.url, file: fileData.file, docRef: fileData.docRef })
             } else {
               this.folderList.push(fileData.folder)
-              this.documents.push({ name: fileData.folder, files: [ { name: fileData.name, uploaded: uploaded, url: fileData.url, docRef: fileData.docRef } ] })
+              this.documents.push({ name: fileData.folder, files: [ { name: fileData.name, uploaded: uploaded, url: fileData.url, file: fileData.file, docRef: fileData.docRef } ] })
             }
+            this.loading = false
           })
         })
         .catch((error) => { console.log(error) })
     },
+    // deleteFiles (docRef) {
+    //   this.deleting = true
+    //   let storageRef = firebase.storage().ref().child(docRef)
+    //   let databaseDocRef = docRef.replace('/', '-')
+    //   storageRef.delete()
+    //     .then(() => {
+    //       firebase.firestore().collection('files').doc(databaseDocRef).delete()
+    //         .then(() => {
+    //           this.getFiles()
+    //           this.deleting = false
+    //         })
+    //         .catch((error) => {
+    //           this.deleting = false
+    //           console.log('file database deletion error: ', error)
+    //         })
+    //     })
+    //     .catch((error) => {
+    //       this.deleting = false
+    //       console.log('file deletion error: ', error)
+    //     })
+    // },
     toggleAddFileModal () {
       this.$store.dispatch('toggleAddFileModal')
+    },
+    toggleDeleteFileModal (file) {
+      this.targetFile = { title: file.name, name: file.file }
+      this.targetData = { docRef: file.docRef }
+      this.$store.dispatch('toggleDeleteFileModal')
     }
   },
   computed: {

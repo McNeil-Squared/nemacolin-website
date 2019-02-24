@@ -12,6 +12,7 @@ export default new Vuex.Store({
     user: null,
     resetPasswordModal: false,
     addFileModal: false,
+    deleteFileModal: false,
     targetUser: { firstName: '', lastName: '' }
   },
   getters: {
@@ -41,6 +42,9 @@ export default new Vuex.Store({
     },
     toggleAddFileModal (state) {
       state.addFileModal = !state.addFileModal
+    },
+    toggleDeleteFileModal (state) {
+      state.deleteFileModal = !state.deleteFileModal
     },
     setTargetUser (state, user) {
       state.targetUser = user
@@ -75,6 +79,9 @@ export default new Vuex.Store({
     },
     toggleAddFileModal ({ commit }) {
       commit('toggleAddFileModal')
+    },
+    toggleDeleteFileModal ({ commit }) {
+      commit('toggleDeleteFileModal')
     },
     setTargetUser ({ commit }, user) {
       commit('setTargetUser', user)
