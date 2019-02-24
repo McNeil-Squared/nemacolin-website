@@ -3,7 +3,7 @@
     h3.headline.text-xs-center.mb-4.primary--text Nemacolin Files
     div.text-xs-center.my-2(v-if="loading")
       v-icon.loading fas fa-sync
-    v-btn(fab fixed bottom right color="primary" @click="toggleAddFileModal")
+    v-btn(fab fixed bottom right color="primary" @click="toggleAddFileModal" v-if="role === 'admin'")
       v-icon fas fa-plus
     v-layout(row wrap v-if="!loading")
       v-flex(xs12 md8 offset-md2)
