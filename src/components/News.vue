@@ -8,10 +8,10 @@
       v-list-tile
         v-list-tile-avatar
           v-icon(color='primary') fas fa-chalkboard-teacher
-        v-list-tile-content 
+        v-list-tile-content
           v-list-tile-title Monthly Board Meeting
           v-list-tile-sub-title UMWA Union Hall - 6:30PM
-            br 
+            br
             | This is a monthly board meeting for Nemacolin Inc.&nbsp;&nbsp;Board meetings are open to the public.
       v-divider
 </template>

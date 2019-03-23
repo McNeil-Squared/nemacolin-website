@@ -4,49 +4,74 @@
     v-card
       v-data-table#time-table.text-xs-center(:headers="headers" :items="entries" sort-icon="fas fa-arrow-up" prev-icon="fas fa-chevron-left" next-icon="fas fa-chevron-right")
         template(slot="items" slot-scope="props")
-          td.text-xs-left {{ props.item.name }}
+          td.text-xs-left {{ props.item.description }}
           td {{ props.item.date }}
           td {{ props.item.timeSpent }}
           td
-            v-icon.mr-3 {{ props.item.actions[0] }}
-            v-icon.ml-3 {{ props.item.actions[1] }}
+            v-icon(color="secondary").mr-3 {{ props.item.actions[0] }}
+            v-icon(color="primary").ml-3 {{ props.item.actions[1] }}
 </template>
 
 <script>
+import firebase from 'firebase'
+import { mapState } from 'vuex'
+import { getMonthName } from '../months.js'
 const actions = ['fas fa-pencil-alt', 'fas fa-times']
 
 export default {
   data () {
     return {
       headers: [
-        { text: 'Description', value: 'name', align: 'left', sortable: false },
+        { text: 'Description', value: 'description', align: 'left', sortable: false },
         { text: 'Date', value: 'date', align: 'center', sortable: false },
         { text: 'Time Spent', value: 'timeSpent', align: 'center', sortable: false },
         { text: 'Actions', value: 'actions', align: 'center', sortable: false }
       ],
-      entries: [
-        { name: 'some task', date: '2/8/2019', timeSpent: 2.0, actions },
-        { name: 'some task', date: '2/8/2019', timeSpent: 2.0, actions },
-        { name: 'some task', date: '2/8/2019', timeSpent: 2.0, actions },
-        { name: 'some task', date: '2/8/2019', timeSpent: 2.0, actions },
-        { name: 'some task', date: '2/8/2019', timeSpent: 2.0, actions },
-        { name: 'some task', date: '2/8/2019', timeSpent: 2.0, actions },
-        { name: 'some task', date: '2/8/2019', timeSpent: 2.0, actions },
-        { name: 'some task', date: '2/8/2019', timeSpent: 2.0, actions }
-      ]
+      entries: []
     }
   },
+  computed: mapState(['user']),
   methods: {
+    getTimeEntries () {
+      let today = new Date()
+      let firstDay = new Date(today.getFullYear(), today.getMonth(), 1)
+      let lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+      firebase.firestore().collection('times').where('userid', '==', this.user.uid).where('date', '>=', firstDay).where('date', '<=', lastDay).get()
+        .then((results) => {
+          results.forEach((doc) => {
+            let entry = doc.data()
+            let entryDate = entry.date.toDate()
+            let formattedDate = `${entryDate.getMonth() + 1}/${entryDate.getDate()}/${entryDate.getFullYear()}`
+            this.entries.push({ description: entry.description, date: formattedDate, timeSpent: entry.timespent, actions: actions })
+          })
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
     addTotal () {
+      let total = 0
+      this.entries.forEach((entry) => {
+        total += entry.timeSpent
+      })
+      let month = getMonthName(new Date().getMonth() + 1)
       let tableActions = document.querySelector('#time-table .v-datatable__actions')
       let div = document.createElement('div')
       div.classList.add('v-datatable__actions__monthly-total')
-      div.innerHTML = `<p>February Total: 10.0 Hours</p>`
+      div.innerHTML = `<p>${month} Total: ${total} Hours</p>`
       if (tableActions) { tableActions.appendChild(div) }
     }
   },
-  mounted () {
-    this.addTotal()
+  watch: {
+    'user': function () {
+      this.getTimeEntries()
+    },
+    'entries': function () {
+      this.addTotal()
+    }
+  },
+  created () {
+    if (this.user) { this.getTimeEntries() }
   }
 }
 </script>
