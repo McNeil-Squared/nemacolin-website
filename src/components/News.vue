@@ -1,8 +1,8 @@
 <template lang="pug">
-  v-flex(xs12 md4)
+  div
     v-card.ml-2
       v-card-title(primary-title)
-        h3.headline.mx-auto.primary--text Nemacolin News
+        h3.headline.mx-auto.primary--text Upcoming Events
     v-list(three-line).ml-2
       v-subheader November 5, 2018
       v-list-tile

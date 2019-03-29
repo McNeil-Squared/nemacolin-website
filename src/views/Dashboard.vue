@@ -2,32 +2,36 @@
   div
     h3.headline.text-xs-center.mb-4.primary--text Dashboard
     v-layout(row wrap).mt-4
-      v-flex(xs12)
+      v-flex(xs12 md6)
         UserButtons
-    v-layout(row wrap v-if="role === 'admin'").mt-5
-      v-flex(xs12)
-        AdminButtons
-    v-layout(row wrap).mt-5
-      v-flex(xs12 md6).pr-2
-        TimeTracking
-      v-flex(xs12 md6).pl-2
-        Meetings
+        v-layout(row wrap v-if="role === 'admin'").mt-5
+          v-flex(xs12)
+            AdminButtons
+      v-flex(xs12 md6)
+        News
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import UserButtons from '../components/UserButtons'
 import AdminButtons from '../components/AdminButtons'
-import TimeTracking from '../components/Time'
-import Meetings from '../components/Meetings'
+import News from '../components/News'
 
 export default {
-  components: { UserButtons, AdminButtons, TimeTracking, Meetings },
+  data () {
+    return {
+      height: ''
+    }
+  },
+  components: { UserButtons, AdminButtons, News },
   computed: {
     role () {
       if (this.user) { return this.user.role }
     },
     ...mapState(['user'])
+  },
+  created () {
+    this.height = document.getElementsByClassName('v-content__wrap')[0].clientHeight * 0.75
   }
 }
 </script>

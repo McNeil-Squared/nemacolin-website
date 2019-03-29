@@ -5,7 +5,8 @@
     v-container(fluid)
       v-layout.mt-4(row wrap justify-center)
         app-about
-        app-news
+        v-flex(xs12 md4)
+          app-news
 </template>
 
 <script>
