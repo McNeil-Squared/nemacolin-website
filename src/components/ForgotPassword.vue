@@ -55,7 +55,7 @@ export default {
           apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY
         }
 
-        axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/forgotpassword', userData)
+        axios.post('https://us-central1-nemacolin-website.cloudfunctions.net/widgets/forgotpassword', userData)
           .then(response => {
             if (response.status === 200) {
               this.$emit('resetRequestSuccess')

@@ -1,5 +1,5 @@
-const functions = require('firebase-functions');
-const express = require('express');
+const functions = require('firebase-functions')
+const express = require('express')
 const cors = require('cors');
 const nodemailer = require('nodemailer')
 const admin = require('firebase-admin')
@@ -11,17 +11,17 @@ const passwordResetRequest = require('./emails/passwordResetRequest')
 
 
 // development variables
-require('./env.js')
-const gmailEmail = process.env.email
-const gmailPassword = process.env.password
-const private_key = process.env.privateKey.replace(/\\n/g, '\n')
-const client_email = process.env.clientEmail
+// require('./env.js')
+// const gmailEmail = process.env.email
+// const gmailPassword = process.env.password
+// const private_key = process.env.privateKey.replace(/\\n/g, '\n')
+// const client_email = process.env.clientEmail
 
 // production variables
-// const gmailEmail = functions.config().gmail.email
-// const gmailPassword = functions.config().gmail.password
-// const private_key = functions.config().firebaseauth.privateKey
-// const client_email = functions.config().firebaseauth.clientEmail
+const gmailEmail = functions.config().gmail.email
+const gmailPassword = functions.config().gmail.password
+const private_key = functions.config().admin.privatekey.replace(/\\n/g, '\n')
+const client_email = functions.config().admin.clientemail
 
 // initialize firebase admin
 
@@ -45,7 +45,8 @@ const mailTransport = nodemailer.createTransport({
 const actionCodeSettings = {
   // URL you want to redirect back to. The domain (www.example.com) for
   // this URL must be whitelisted in the Firebase Console.
-  url: 'http://localhost:8080/login',
+  url: 'https://nemacolin-website.firebaseapp.com/login'
+  // url: 'http://localhost:8080/login',
 };
 
 const sendVerificationEmail = (emailData) => {

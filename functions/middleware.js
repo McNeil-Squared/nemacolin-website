@@ -1,9 +1,10 @@
+const functions = require('firebase-functions')
 //development variables
-require('./env.js')
-const apiKey = process.env.apikey
+// require('./env.js')
+// const apiKey = process.env.apikey
 
 // production variables
-// const apiKey = functions.config().contact.apikey
+const apiKey = functions.config().contact.apikey
 
 module.exports = (req, res, next) => {
   if (req.body.apiKey === apiKey) {

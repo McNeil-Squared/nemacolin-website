@@ -4,7 +4,7 @@
       v-card-title(primary-title)
         h3.headline.mx-auto.primary--text Upcoming Events
     v-list(three-line).ml-2
-      v-subheader November 5, 2018
+      v-subheader April 1, 2019
       v-list-tile
         v-list-tile-avatar
           v-icon(color='primary') fas fa-chalkboard-teacher

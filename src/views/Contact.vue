@@ -57,7 +57,7 @@ export default {
       if (!this.$v.$invalid) {
         this.sending = true
         let messageData = { name: this.name, email: this.email.toLowerCase(), message: this.message, ipData: this.ipData, apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY }
-        axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/contact', messageData)
+        axios.post('https://us-central1-nemacolin-website.cloudfunctions.net/widgets/contact', messageData)
           .then(res => {
             res.status === 200 ? this.status = 'success' : this.status = 'fail'
             this.sending = false
@@ -79,7 +79,7 @@ export default {
   },
   created () {
     // Get IP Address of user which is submitted with the form data
-    fetch('https://ipinfo.io/json')
+    fetch(`https://ipinfo.io/json?token=${process.env.VUE_APP_ipinfokey}`)
       .then((data) => { return data.json() })
       .then(ip => { this.ipData = ip })
   }

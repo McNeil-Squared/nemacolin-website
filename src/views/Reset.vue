@@ -46,7 +46,7 @@ export default {
           email: this.username.toLowerCase(),
           apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY
         }
-        axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/resetpassword', messageData)
+        axios.post('https://us-central1-nemacolin-website.cloudfunctions.net/widgets/resetpassword', messageData)
           .then(() => {
             this.status = 'success'
             this.sending = false

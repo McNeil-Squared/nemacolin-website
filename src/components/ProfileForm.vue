@@ -202,7 +202,7 @@ export default {
             apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY
           }
 
-          axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/adduser', userData)
+          axios.post('https://us-central1-nemacolin-website.cloudfunctions.net/widgets/adduser', userData)
             .then(response => {
               if (response.status === 200) {
                 firebase.firestore().collection('users').doc(response.data.uid).set(this.updatedUserdata)
@@ -269,7 +269,7 @@ export default {
       }
       currentUser.updateEmail(updatedUserdata.email)
         .then(() => {
-          axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/verifyemail', userData)
+          axios.post('https://us-central1-nemacolin-website.cloudfunctions.net/widgets/verifyemail', userData)
             .then(() => {
               this.emailUpdated = true
               this.updateDatabase(updatedUserdata)

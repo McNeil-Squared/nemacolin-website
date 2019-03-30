@@ -100,7 +100,7 @@ export default {
         email: this.targetUser.email,
         apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY
       }
-      axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/disableorreenableuser', userData)
+      axios.post('https://us-central1-nemacolin-website.cloudfunctions.net/widgets/disableorreenableuser', userData)
         .then((userRecord) => {
           let disable
           this.action === 'Disable' ? disable = true : disable = false
@@ -132,7 +132,7 @@ export default {
         email: this.targetUser.email,
         apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY
       }
-      axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/deleteuser', userData)
+      axios.post('https://us-central1-nemacolin-website.cloudfunctions.net/widgets/deleteuser', userData)
         .then((userRecord) => {
           firebase.firestore().collection('users').doc(userRecord.data.uid).delete()
             .then(() => {
