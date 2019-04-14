@@ -1,18 +1,54 @@
 <template lang="pug">
   div
     h3.mb-3.headline.text-xs-center.primary--text Upcoming Events
-    v-list(three-line)
-      v-subheader April 1, 2019
+    p.subheading.text-xs-center(v-if="events[0] === 'There are no upcoming events at this time.'") {{ events[0] }}
+    v-list(three-line v-for="(event, i) in events" :key="i" v-else)
+      v-subheader {{ event.date }} at {{ event.time }}
       v-list-tile
         v-list-tile-avatar
           v-icon(color='primary') fas fa-chalkboard-teacher
         v-list-tile-content
-          v-list-tile-title Monthly Board Meeting
-          v-list-tile-sub-title UMWA Union Hall - 6:30PM
+          v-list-tile-title {{ event.title }}
+          v-list-tile-sub-title {{ event.location }}
             br
-            | This is a monthly board meeting for Nemacolin Inc.&nbsp;&nbsp;Board meetings are open to the public.
-      //- v-divider
+            | {{ event.details }}
+      v-divider(v-if="i > 0 && i < events.length")
 </template>
+
+<script>
+import firebase from 'firebase'
+export default {
+  name: 'news',
+  data () {
+    return {
+      events: []
+    }
+  },
+  methods: {
+    getNews () {
+      let fetchedEvents = []
+      firebase.firestore().collection('events').where('date', '>=', new Date()).get()
+        .then((snapshot) => {
+          snapshot.forEach((event) => {
+            let eventData = event.data()
+            let eventDetails = {
+              date: new Date(eventData.date.seconds * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+              time: new Date(eventData.date.seconds * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' }),
+              details: eventData.details,
+              location: eventData.location,
+              title: eventData.title
+            }
+            fetchedEvents.push(eventDetails)
+          })
+          fetchedEvents.length > 0 ? this.events = fetchedEvents : this.events = ['There are no upcoming events at this time.']
+        })
+    }
+  },
+  created () {
+    this.getNews()
+  }
+}
+</script>
 
 <style lang="scss">
   .v-list__tile {
