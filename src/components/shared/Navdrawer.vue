@@ -42,15 +42,13 @@
             v-list-tile.dense-menu
               v-list-tile-content
                 v-list-tile-title User Management
-          router-link.dense-menu(to="" tag="v-list-tile" @click="logout")
+          router-link.dense-menu(to="/logout" tag="v-list-tile")
             v-list-tile.dense-menu
               v-list-tile-content
                 v-list-tile-title Logout
 </template>
 
 <script>
-import firebase from 'firebase'
-
 export default {
   data () {
     return {
@@ -75,11 +73,6 @@ export default {
   methods: {
     toggleNavDrawer () {
       this.$store.dispatch('toggleDrawer')
-    },
-    logout (action) {
-      firebase.auth().signOut()
-        .then(this.$store.dispatch('removeUserSessionData'))
-        .catch(error => console.log(error))
     }
   },
   computed: {

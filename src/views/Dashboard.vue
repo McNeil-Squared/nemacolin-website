@@ -7,7 +7,7 @@
         v-layout(row wrap v-if="role === 'admin'").mt-5
           v-flex(xs12)
             AdminButtons
-      v-flex(xs12 md6)
+      v-flex.mt-3(xs12 md6)
         News
 </template>
 

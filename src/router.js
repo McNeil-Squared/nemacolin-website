@@ -89,6 +89,7 @@ const isAuthorized = (to, next) => {
 const logout = (next) => {
   firebase.auth().signOut()
     .then(() => {
+      router.replace('/')
       store.dispatch('removeUserSessionData')
     })
     .catch(error => console.log(error))

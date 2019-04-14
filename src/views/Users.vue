@@ -1,12 +1,12 @@
 <template lang="pug">
   div
-    h2.text-xs-center.primary--text.mb-3 User Management
+    h2.text-xs-center.primary--text.mb-3-md-and-up User Management
     div.text-xs-center.my-2(v-if="loading")
       v-icon.loading fas fa-sync
     v-btn(fab fixed bottom right color="primary" to="/adduser")
       v-icon fas fa-plus
     v-layout(row wrap)
-      v-flex(xs12 md6 v-for="(user, i) in users" :key="i" v-if="!loading")
+      v-flex.mt-4-sm-and-down(xs12 md6 v-for="(user, i) in users" :key="i" :class="{ 'mt-4': i > 1 }" v-if="!loading")
         v-card(:class="[{disabledUser: user.disabled}]").mx-2
           v-card-title.pb-0(primary title)
             div.full-width.text-xs-center.mb-3
@@ -19,11 +19,14 @@
                 p #[span.font-weight-bold Phone:] {{ user.phone }}
                 p #[span.font-weight-bold Role:] {{ user.role }}
           v-card-actions.justify-center
-            v-btn(color="accent" @click="toggleResetPasswordModal(user)") Reset Password
-            v-btn(color="secondary" :to="user.profileLink") User Details
-            v-btn.white--text(v-if="!user.disabled" color="caution" @click="confirmAction(user, 'Disable')") Disable User
-            v-btn.white--text(v-else color="caution" @click="confirmAction(user, 'Re-Enable')") Re-Enable User
-            v-btn(color="primary" @click="confirmAction(user, 'Delete')") Delete User
+            v-layout(row wrap)
+              v-flex.text-xs-center(xs12 md6)
+                v-btn(color="accent" @click="toggleResetPasswordModal(user)") Reset Password
+                v-btn(color="secondary" :to="user.profileLink") User Details
+              v-flex.text-xs-center.mt-4-sm-and-down(xs12 md6)
+                v-btn.white--text(v-if="!user.disabled" color="caution" @click="confirmAction(user, 'Disable')") Disable User
+                v-btn.white--text(v-else color="caution" @click="confirmAction(user, 'Re-Enable')") Re-Enable User
+                v-btn(color="primary" @click="confirmAction(user, 'Delete')") Delete User
     v-layout(row wrap)
       v-flex(xs12 md4 offset-md4)
         v-dialog(v-model="confirm" :width="width")

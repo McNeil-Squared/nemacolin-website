@@ -1,12 +1,12 @@
 <template lang="pug">
   div
     app-banner(:bannerStyles="bannerStyles" :bannerText="bannerText")
-    app-services
-    v-container(fluid)
-      v-layout.mt-4(row wrap justify-center)
-        app-about
-        v-flex(xs12 md4)
-          app-news
+    app-services.mt-4
+    v-layout.mt-4(row wrap)
+      v-flex(xs12 md8)
+        app-about.mr-2-md-and-up
+      v-flex(xs12 md4)
+        app-news.ml-2-md-and-up.mt-4-sm-and-down
 </template>
 
 <script>

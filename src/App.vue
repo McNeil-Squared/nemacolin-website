@@ -39,6 +39,30 @@ export default {
   img:not(.nemacolin-avatar) { max-width: 100%; }
   a { text-decoration: none; }
 
+  @media screen and (min-width: 960px) {
+    .mr-2-md-and-up {
+      margin-right: 8px;
+    }
+    .ml-2-md-and-up {
+      margin-left: 8px;
+    }
+    .mb-3-md-and-up {
+      margin-bottom: 16px;
+    }
+  }
+
+  @media screen and (max-width: 959px) {
+    .mt-4-sm-and-down {
+      margin-top: 24px;
+    }
+  }
+
+  @media screen and (max-width: 1248px) {
+    .mt-4-md-and-down {
+      margin-top: 24px;
+    }
+  }
+
   .v-dialog--active { background-color: #fff; }
   p.link { color: blue; }
   p.link:hover { cursor: pointer; }

@@ -1,9 +1,7 @@
 <template lang="pug">
   div
-    v-card.ml-2
-      v-card-title(primary-title)
-        h3.headline.mx-auto.primary--text Upcoming Events
-    v-list(three-line).ml-2
+    h3.mb-3.headline.text-xs-center.primary--text Upcoming Events
+    v-list(three-line)
       v-subheader April 1, 2019
       v-list-tile
         v-list-tile-avatar
@@ -13,7 +11,7 @@
           v-list-tile-sub-title UMWA Union Hall - 6:30PM
             br
             | This is a monthly board meeting for Nemacolin Inc.&nbsp;&nbsp;Board meetings are open to the public.
-      v-divider
+      //- v-divider
 </template>
 
 <style lang="scss">
