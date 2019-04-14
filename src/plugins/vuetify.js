@@ -22,6 +22,8 @@ import {
   VAlert,
   VDialog,
   VDataTable,
+  VDatePicker,
+  VTimePicker,
   transitions
 } from 'vuetify'
 import 'vuetify/src/stylus/app.styl'
@@ -49,6 +51,8 @@ Vue.use(Vuetify, {
     VAlert,
     VDialog,
     VDataTable,
+    VDatePicker,
+    VTimePicker,
     transitions
   },
   theme: {

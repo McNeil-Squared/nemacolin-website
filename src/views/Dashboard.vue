@@ -9,6 +9,8 @@
             AdminButtons
       v-flex.mt-3(xs12 md6)
         News
+        v-btn(color="primary" @click="showAddEventModal()") Add Event
+    AddEvent
 </template>
 
 <script>
@@ -16,6 +18,7 @@ import { mapState } from 'vuex'
 import UserButtons from '../components/UserButtons'
 import AdminButtons from '../components/AdminButtons'
 import News from '../components/News'
+import AddEvent from '../components/addEvent'
 
 export default {
   data () {
@@ -23,7 +26,12 @@ export default {
       height: ''
     }
   },
-  components: { UserButtons, AdminButtons, News },
+  components: { UserButtons, AdminButtons, News, AddEvent },
+  methods: {
+    showAddEventModal () {
+      this.$store.dispatch('toggleAddEventModal')
+    }
+  },
   computed: {
     role () {
       if (this.user) { return this.user.role }
