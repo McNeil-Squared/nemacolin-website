@@ -1,15 +1,18 @@
 <template lang="pug">
-   v-dialog(v-model="addEventModal" :width="width")
+   v-dialog(v-model="addEventModal" :width="width" persistent)
     form.pa-3.text-xs-center(@submit.prevent="submit" autocomplete="on")
       h4.mt-2.mb-4.text-xs-center New Event
-      label.d-block.text-xs-left(for="date") Date
-      v-menu(ref="dateMenu" v-model="dateMenu" :close-on-content-click="false" :return-value.sync="date" lazy transition="scale-transition" offset-y full-width max-width="290px" min-width="290px")
-        v-text-field(slot="activator" v-model="date" prepend_icon="event" label="Pick a Date" :class="{'form-field--errors': areErrors('date')}" :error-messages="errors['date']" @input="validateField('date', 'Date', ['required'])" readonly solo)
-        v-date-picker(v-model="date" min='2019-04-14' color="primary" @input="$refs.dateMenu.save(date)" no-title :class="{'form-field--errors': areErrors('date')}" :error-messages="errors['date']")
-      label.d-block.text-xs-left(for="date") Time
-      v-menu(ref="timeMenu" v-model="timeMenu" :close-on-content-click="false" :return-value.sync="time" lazy transition="scale-transition" offset-y full-width max-width="290px" min-width="290px")
-        v-text-field(slot="activator" v-model="time" prepend_icon="access_time" label="Pick a Time" :class="{'form-field--errors': areErrors('time')}" :error-messages="errors['time']" @input="validateField('time', 'Time', ['required'])" readonly solo)
-        v-time-picker(v-model="time" color="primary" @change="$refs.timeMenu.save(time)")
+      v-layout(row wrap)
+        v-flex.pr-1(xs12 md6)
+          label.d-block.text-xs-left(for="date") Date
+          v-menu(ref="dateMenu" v-model="dateMenu" :close-on-content-click="false" :return-value.sync="date" lazy transition="scale-transition" offset-y full-width max-width="290px")
+            v-text-field(slot="activator" v-model="date" prepend_icon="event" label="Pick a Date" :class="{'form-field--errors': areErrors('date')}" :error-messages="errors['date']" @input="validateField('date', 'Date', ['required'])" readonly solo)
+            v-date-picker(v-model="date" :min='min' color="primary" @input="$refs.dateMenu.save(date)" no-title :class="{'form-field--errors': areErrors('date')}" :error-messages="errors['date']")
+        v-flex.pl-1(xs12 md6)
+          label.d-block.text-xs-left(for="date") Time
+          v-menu(ref="timeMenu" v-model="timeMenu" :close-on-content-click="false" :return-value.sync="time" lazy transition="scale-transition" offset-y full-width max-width="290px" :nudge-left="60")
+            v-text-field(slot="activator" v-model="time" prepend_icon="access_time" label="Pick a Time" :class="{'form-field--errors': areErrors('time')}" :error-messages="errors['time']" @input="validateField('time', 'Time', ['required'])" readonly solo)
+            v-time-picker(v-model="time" color="primary" @change="$refs.timeMenu.save(time)")
       label.d-block.text-xs-left(for="title") Title
       v-text-field(v-model="title"  placeholder="title" :class="{'form-field--errors': areErrors('title')}" :error-messages="errors['title']" @input="validateField('title', 'Title', ['required', 'name'])" solo)
       label.d-block.text-xs-left(for="location") Location
@@ -68,16 +71,35 @@ export default {
       this.$store.dispatch('toggleAddEventModal')
     },
     submit () {
-      this.sending = true
-      // let eventData = {
-      //   date: '',
-      //   title: this.title,
-      //   location: this.location,
-      //   details: this.details
-      // }
+      if (!this.$v.$invalid) {
+        this.sending = true
+        this.error = false
+        let eventData = {
+          date: new Date(`${this.date} ${this.time}`),
+          title: this.title,
+          location: this.location,
+          details: this.details
+        }
+        firebase.firestore().collection('events').add(eventData)
+          .then(() => {
+            this.sending = false
+            this.toggleAddEventModal()
+          })
+          .catch((error) => {
+            console.log(error)
+            this.sending = false
+            this.error = true
+          })
+      }
     }
   },
-  computed: mapState([ 'addEventModal' ]),
+  computed: {
+    min () {
+      let today = new Date()
+      return `${today.getFullYear()}-${today.getMonth() + 1 < 10 ? '0' + (today.getMonth() + 1) : today.getMonth() + 1}-${today.getDate()}`
+    },
+    ...mapState([ 'addEventModal' ])
+  },
   created () {
     if (window.innerwidth < 500) this.width = window.innerWidth * 0.9
   }

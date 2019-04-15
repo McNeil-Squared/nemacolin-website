@@ -12,7 +12,7 @@
           v-list-tile-sub-title {{ event.location }}
             br
             | {{ event.details }}
-      v-divider(v-if="i > 0 && i < events.length")
+      v-divider(v-if="events.length > 1 && i < events.length")
 </template>
 
 <script>
