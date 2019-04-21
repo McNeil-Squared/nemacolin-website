@@ -1,13 +1,13 @@
 <template lang="pug">
   div
-    h3.headline.text-xs-center.mb-4.primary--text Dashboard
     v-layout(row wrap).mt-4
       v-flex(xs12 md6)
+        h3.headline.text-xs-center.mb-4.primary--text Dashboard
         UserButtons
         v-layout(row wrap v-if="role === 'admin'").mt-5
           v-flex(xs12)
             AdminButtons
-      v-flex.mt-3(xs12 md6)
+      v-flex(xs12 md6)
         News
         v-btn(color="primary" @click="showAddEventModal()") Add Event
     AddEvent

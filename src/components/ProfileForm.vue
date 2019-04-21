@@ -73,6 +73,7 @@ export default {
       loading: true,
       notFound: false,
       user: {},
+      userid: '',
       errors: {},
       currentUserEmail: '',
       currentUserUsername: '',
@@ -135,9 +136,13 @@ export default {
       dbQuery.then((result) => {
         let firebaseData
         if (this.loggedinUser.role === 'admin') {
-          result.forEach(user => { firebaseData = user.data() })
+          result.forEach(user => {
+            firebaseData = user.data()
+            this.userid = user.id
+          })
         } else {
           firebaseData = result.data()
+          this.userid = result.id
         }
         if (!firebaseData) {
           this.loading = false
@@ -231,7 +236,7 @@ export default {
       }
     },
     updateDatabase (updatedUserdata) {
-      firebase.firestore().collection('users').doc(this.$store.getters.user.uid).update(this.updatedUserdata)
+      firebase.firestore().collection('users').doc(this.userid).update(this.updatedUserdata)
         .then(() => {
           this.status = 'success'
           this.sending = false
@@ -243,21 +248,51 @@ export default {
         })
     },
     updateAuthdata (updatedUserdata) {
-      let currentUser = firebase.auth().currentUser
-      if (this.usernameChanged) {
-        currentUser.updateProfile({ displayName: `${updatedUserdata.firstName} ${updatedUserdata.lastName}` })
+      if (this.loggedinUser.uid === this.userid) {
+        let currentUser = firebase.auth().currentUser
+        if (this.usernameChanged) {
+          currentUser.updateProfile({ displayName: `${updatedUserdata.firstName} ${updatedUserdata.lastName}` })
+            .then(() => {
+              if (!this.emailChanged) {
+                this.updateDatabase(updatedUserdata)
+              }
+            }).catch((error) => {
+              console.log('username update error: ', error)
+              this.status = 'error'
+              this.sending = false
+            })
+          if (this.emailChanged) {
+            this.updateEmail(updatedUserdata)
+          }
+        }
+      } else {
+        let userData = {
+          uid: this.userid,
+          displayName: `${this.updatedUserdata.firstName} ${this.updatedUserdata.lastName}`,
+          apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY
+        }
+        if (this.emailChanged) {
+          userData.email = this.updatedUserdata.email
+        }
+        axios.post('https://us-central1-nemacolin-website.cloudfunctions.net/widgets/updateauthdata', userData)
           .then(() => {
-            if (!this.emailChanged) {
+            if (this.emailChanged) {
+              this.emailUpdated = true
+              this.updateDatabase(updatedUserdata)
+            } else {
               this.updateDatabase(updatedUserdata)
             }
-          }).catch((error) => {
-            console.log('username update error: ', error)
-            this.status = 'error'
-            this.sending = false
           })
-      }
-      if (this.emailChanged) {
-        this.updateEmail(updatedUserdata)
+          .catch((error) => {
+            console.log(error)
+            if (error === 'auth/email-already-in-use') {
+              this.status = 'emailInUseError'
+              this.sending = false
+            } else {
+              this.status = 'error'
+              this.sending = false
+            }
+          })
       }
     },
     updateEmail (updatedUserdata) {

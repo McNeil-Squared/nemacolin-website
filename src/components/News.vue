@@ -12,17 +12,27 @@
           v-list-tile-sub-title {{ event.location }}
             br
             | {{ event.details }}
+      v-btn(v-if="user.role === 'admin' && onDashboard" color="secondary" @click="editEvent(event.id)") edit
+      v-btn(v-if="user.role === 'admin' && onDashboard" color="accent" @click="deleteEvent(event.id)") delete
       v-divider(v-if="events.length > 1 && i < events.length")
 </template>
 
 <script>
 import firebase from 'firebase'
+import { mapState } from 'vuex'
+
 export default {
   name: 'news',
   data () {
     return {
       events: []
     }
+  },
+  computed: {
+    onDashboard () {
+      return window.location.pathname === '/dashboard'
+    },
+    ...mapState(['user'])
   },
   methods: {
     getNews () {
@@ -36,7 +46,8 @@ export default {
               time: new Date(eventData.date.seconds * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' }),
               details: eventData.details,
               location: eventData.location,
-              title: eventData.title
+              title: eventData.title,
+              id: event.id
             }
             fetchedEvents.push(eventDetails)
           })

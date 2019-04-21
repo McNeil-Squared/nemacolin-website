@@ -147,11 +147,10 @@ const sendPasswordResetEmail = (emailData) => {
 
 const sendPasswordResetRequest = (emailData) => {
   return new Promise((resolve, reject) => {
-
     if (emailData.disabled) {
       let error = new Error()
       error.code = 'auth/user-disabled'
-      reject(error)
+      return reject(error)
     } else {
       let templateData = {
         greeting: ['Angie'],
@@ -404,6 +403,35 @@ app.post('/deleteuser', middleware, (req, res) => {
       console.log('delete user error: ', error)
       return res.status(500).send(error)
     })
+})
+
+app.post('/updateauthdata', middleware, (req, res) => {
+  let data = {}
+  if (req.body.displayName) { data.displayName = req.body.displayName }
+  if (req.body.email) { data.email = req.body.email }
+  admin.auth().updateUser(req.body.uid, data)
+    .then(() => {
+      if (req.body.email) {
+        let emailData = {
+          displayName: req.body.displayName,
+          email: req.body.email,
+          subject: `Verify Email Address for ${req.body.displayName}`,
+          type: 'email change'
+        }
+        return sendVerificationEmail(emailData)
+      } else {
+        console.log('success')
+        return res.status(200).send('success')
+      }
+    })
+    .then(() => {
+      console.log('success')
+      return res.status(200).send('success')
+    })
+    .catch((error) => {
+      console.log('Error updating user:', error)
+      return res.status(500).send(error)
+    });
 })
 
 // app.use((error, req, res, next) => {
