@@ -14,7 +14,8 @@ export default new Vuex.Store({
     addFileModal: false,
     deleteFileModal: false,
     addEventModal: false,
-    targetUser: { firstName: '', lastName: '' }
+    targetUser: { firstName: '', lastName: '' },
+    event: null
   },
   getters: {
     navDrawer (state) {
@@ -49,6 +50,14 @@ export default new Vuex.Store({
     },
     toggleAddEventModal (state) {
       state.addEventModal = !state.addEventModal
+    },
+    addEvent (state) {
+      state.event = null
+      state.addEventModal = !state.addEventModal
+    },
+    editEvent (state, event) {
+      state.addEventModal = !state.addEventModal
+      state.event = event
     },
     setTargetUser (state, user) {
       state.targetUser = user
@@ -86,6 +95,12 @@ export default new Vuex.Store({
     },
     toggleDeleteFileModal ({ commit }) {
       commit('toggleDeleteFileModal')
+    },
+    addEvent ({ commit }) {
+      commit('addEvent')
+    },
+    editEvent ({ commit }, event) {
+      commit('editEvent', event)
     },
     toggleAddEventModal ({ commit }) {
       commit('toggleAddEventModal')

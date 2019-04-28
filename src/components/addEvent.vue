@@ -6,12 +6,12 @@
         v-flex.pr-1(xs12 md6)
           label.d-block.text-xs-left(for="date") Date
           v-menu(ref="dateMenu" v-model="dateMenu" :close-on-content-click="false" :return-value.sync="date" lazy transition="scale-transition" offset-y full-width max-width="290px")
-            v-text-field(slot="activator" v-model="date" prepend_icon="event" label="Pick a Date" :class="{'form-field--errors': areErrors('date')}" :error-messages="errors['date']" @input="validateField('date', 'Date', ['required'])" readonly solo)
+            v-text-field(slot="activator" v-model="formattedDate" prepend_icon="event" label="Pick a Date" :class="{'form-field--errors': areErrors('date')}" :error-messages="errors['date']" @input="validateField('date', 'Date', ['required'])" readonly solo)
             v-date-picker(v-model="date" :min='min' color="primary" @input="$refs.dateMenu.save(date)" no-title :class="{'form-field--errors': areErrors('date')}" :error-messages="errors['date']")
         v-flex.pl-1(xs12 md6)
           label.d-block.text-xs-left(for="date") Time
           v-menu(ref="timeMenu" v-model="timeMenu" :close-on-content-click="false" :return-value.sync="time" lazy transition="scale-transition" offset-y full-width max-width="290px" :nudge-left="60")
-            v-text-field(slot="activator" v-model="time" prepend_icon="access_time" label="Pick a Time" :class="{'form-field--errors': areErrors('time')}" :error-messages="errors['time']" @input="validateField('time', 'Time', ['required'])" readonly solo)
+            v-text-field(slot="activator" v-model="formattedTime" prepend_icon="access_time" label="Pick a Time" :class="{'form-field--errors': areErrors('time')}" :error-messages="errors['time']" @input="validateField('time', 'Time', ['required'])" readonly solo)
             v-time-picker(v-model="time" color="primary" @change="$refs.timeMenu.save(time)")
       label.d-block.text-xs-left(for="title") Title
       v-text-field(v-model="title"  placeholder="title" :class="{'form-field--errors': areErrors('title')}" :error-messages="errors['title']" @input="validateField('title', 'Title', ['required', 'name'])" solo)
@@ -80,10 +80,12 @@ export default {
           location: this.location,
           details: this.details
         }
-        firebase.firestore().collection('events').add(eventData)
+        let dbQuery = this.event ? firebase.firestore().collection('events').doc(this.event.id).update(eventData) : firebase.firestore().collection('events').add(eventData)
+        dbQuery
           .then(() => {
             this.sending = false
             this.toggleAddEventModal()
+            this.$root.$emit('refresh-events')
           })
           .catch((error) => {
             console.log(error)
@@ -91,6 +93,48 @@ export default {
             this.error = true
           })
       }
+    },
+    getMonthName (month) {
+      let monthName
+      switch (month) {
+        case '01':
+          monthName = 'January'
+          break
+        case '02':
+          monthName = 'February'
+          break
+        case '03':
+          monthName = 'March'
+          break
+        case '04':
+          monthName = 'April'
+          break
+        case '05':
+          monthName = 'May'
+          break
+        case '06':
+          monthName = 'June'
+          break
+        case '07':
+          monthName = 'July'
+          break
+        case '08':
+          monthName = 'August'
+          break
+        case '09':
+          monthName = 'September'
+          break
+        case '10':
+          monthName = 'October'
+          break
+        case '11':
+          monthName = 'November'
+          break
+        case '12':
+          monthName = 'December'
+          break
+      }
+      return monthName
     }
   },
   computed: {
@@ -98,7 +142,40 @@ export default {
       let today = new Date()
       return `${today.getFullYear()}-${today.getMonth() + 1 < 10 ? '0' + (today.getMonth() + 1) : today.getMonth() + 1}-${today.getDate()}`
     },
-    ...mapState([ 'addEventModal' ])
+    formattedDate () {
+      if (this.date) {
+        let [year, month, day] = this.date.split('-')
+        return `${this.getMonthName(month)} ${day}, ${year}`
+      }
+    },
+    formattedTime () {
+      if (this.time) {
+        let partOfDay = ''
+        let [hour, minute] = this.time.split(':')
+        partOfDay = hour > 12 ? 'PM' : 'AM'
+        hour = hour > 12 ? hour - 12 : hour
+        return `${hour}:${minute} ${partOfDay}`
+      }
+    },
+    ...mapState(['addEventModal', 'event'])
+  },
+  watch: {
+    event: function () {
+      if (this.event) {
+        let eventDate = new Date(this.event.timestamp.seconds * 1000)
+        this.date = `${eventDate.getFullYear()}-${eventDate.getMonth() + 1 < 10 ? '0' + (eventDate.getMonth() + 1) : eventDate.getMonth() + 1}-${eventDate.getDate()}`
+        this.time = `${eventDate.getHours()}:${eventDate.getMinutes() < 10 ? '0' + eventDate.getMinutes() : eventDate.getMinutes()}`
+        this.title = this.event.title
+        this.location = this.event.location
+        this.details = this.event.details
+      } else {
+        this.date = null
+        this.time = null
+        this.title = ''
+        this.location = ''
+        this.details = ''
+      }
+    }
   },
   created () {
     if (window.innerwidth < 500) this.width = window.innerWidth * 0.9

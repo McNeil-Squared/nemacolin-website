@@ -1,19 +1,19 @@
 <template lang="pug">
   div
-    app-banner(:bannerStyles="bannerStyles" :bannerText="bannerText")
-    app-services.mt-4
+    Banner(:bannerStyles="bannerStyles" :bannerText="bannerText")
+    Services.mt-4
     v-layout.mt-4(row wrap)
       v-flex(xs12 md8)
-        app-about.mr-2-md-and-up
+        About.mr-2-md-and-up
       v-flex(xs12 md4)
-        app-news.ml-2-md-and-up.mt-4-sm-and-down
+        Events.ml-2-md-and-up.mt-4-sm-and-down
 </template>
 
 <script>
 import Banner from '../components/Banner'
 import Services from '../components/Services'
 import About from '../components/About'
-import News from '../components/News'
+import Events from '../components/Events'
 export default {
   data () {
     return {
@@ -28,11 +28,6 @@ export default {
       }
     }
   },
-  components: {
-    appBanner: Banner,
-    appServices: Services,
-    appAbout: About,
-    appNews: News
-  }
+  components: { Banner, Services, About, Events }
 }
 </script>
