@@ -10,6 +10,7 @@
       v-flex(xs12 md6)
         Events
     AddEvent
+    DeleteEvent
 </template>
 
 <script>
@@ -17,7 +18,8 @@ import { mapState } from 'vuex'
 import UserButtons from '../components/UserButtons'
 import AdminButtons from '../components/AdminButtons'
 import Events from '../components/Events'
-import AddEvent from '../components/addEvent'
+import AddEvent from '../components/AddEvent'
+import DeleteEvent from '../components/DeleteEvent'
 
 export default {
   data () {
@@ -25,7 +27,7 @@ export default {
       height: ''
     }
   },
-  components: { UserButtons, AdminButtons, Events, AddEvent },
+  components: { UserButtons, AdminButtons, Events, AddEvent, DeleteEvent },
   computed: {
     role () {
       if (this.user) { return this.user.role }

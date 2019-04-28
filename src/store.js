@@ -14,6 +14,7 @@ export default new Vuex.Store({
     addFileModal: false,
     deleteFileModal: false,
     addEventModal: false,
+    deleteEventModal: false,
     targetUser: { firstName: '', lastName: '' },
     event: null
   },
@@ -51,12 +52,19 @@ export default new Vuex.Store({
     toggleAddEventModal (state) {
       state.addEventModal = !state.addEventModal
     },
+    toggleDeleteEventModal (state) {
+      state.deleteEventModal = !state.deleteEventModal
+    },
     addEvent (state) {
       state.event = null
       state.addEventModal = !state.addEventModal
     },
     editEvent (state, event) {
       state.addEventModal = !state.addEventModal
+      state.event = event
+    },
+    deleteEvent (state, event) {
+      state.deleteEventModal = !state.deleteEventModal
       state.event = event
     },
     setTargetUser (state, user) {
@@ -102,8 +110,14 @@ export default new Vuex.Store({
     editEvent ({ commit }, event) {
       commit('editEvent', event)
     },
+    deleteEvent ({ commit }, event) {
+      commit('deleteEvent', event)
+    },
     toggleAddEventModal ({ commit }) {
       commit('toggleAddEventModal')
+    },
+    toggleDeleteEventModal ({ commit }) {
+      commit('toggleDeleteEventModal')
     },
     setTargetUser ({ commit }, user) {
       commit('setTargetUser', user)

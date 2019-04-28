@@ -12,8 +12,8 @@
           v-list-tile-sub-title {{ event.location }}
             br
             | {{ event.details }}
-      v-btn(v-if="user.role === 'admin' && onDashboard" color="secondary" @click="editEvent(event)") edit
-      v-btn(v-if="user.role === 'admin' && onDashboard" color="accent" @click="deleteEvent(event.id)") delete
+      v-btn(v-if="user.role === 'admin' && onDashboard" color="accent" @click="editEvent(event)") edit
+      v-btn(v-if="user.role === 'admin' && onDashboard" color="primary" @click="deleteEvent(event)") delete
       v-divider(v-if="events.length > 1 && i < events.length - 1")
 </template>
 
@@ -57,6 +57,9 @@ export default {
     },
     editEvent (event) {
       this.$store.dispatch('editEvent', event)
+    },
+    deleteEvent (event) {
+      this.$store.dispatch('deleteEvent', event)
     }
   },
   created () {
