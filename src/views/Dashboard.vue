@@ -9,7 +9,6 @@
             AdminButtons
       v-flex(xs12 md6)
         Events
-        v-btn(color="primary" @click="addEvent()") Add Event
     AddEvent
 </template>
 
@@ -27,11 +26,6 @@ export default {
     }
   },
   components: { UserButtons, AdminButtons, Events, AddEvent },
-  methods: {
-    addEvent () {
-      this.$store.dispatch('addEvent')
-    }
-  },
   computed: {
     role () {
       if (this.user) { return this.user.role }
