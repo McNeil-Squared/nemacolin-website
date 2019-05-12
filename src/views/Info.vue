@@ -3,16 +3,16 @@
     h3.headline.text-xs-center.mb-4.primary--text Important Information for Nemacolin Residents
     v-layout(row wrap)
       v-flex(xs12 md6)
-        app-requirements
+        Requirements
       v-flex(xs12 md6)
-        app-policies
+        Policies
 </template>
 
 <script>
-import requirements from '../components/Requirements'
-import policies from '../components/Policies'
+import Requirements from '../components/Requirements'
+import Policies from '../components/Policies'
 
 export default {
-  components: { appRequirements: requirements, appPolicies: policies }
+  components: { Requirements, Policies }
 }
 </script>

@@ -29,7 +29,7 @@ export default {
         type: 'resend',
         apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY
       }
-      axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/verifyemail', userData)
+      axios.post('https://us-central1-nemacolin-website.cloudfunctions.net/widgets/verifyemail', userData)
         .then(() => {
           this.sending = true
           this.verificationResend = true

@@ -65,27 +65,6 @@ export default {
         })
         .catch((error) => { console.log(error) })
     },
-    // deleteFiles (docRef) {
-    //   this.deleting = true
-    //   let storageRef = firebase.storage().ref().child(docRef)
-    //   let databaseDocRef = docRef.replace('/', '-')
-    //   storageRef.delete()
-    //     .then(() => {
-    //       firebase.firestore().collection('files').doc(databaseDocRef).delete()
-    //         .then(() => {
-    //           this.getFiles()
-    //           this.deleting = false
-    //         })
-    //         .catch((error) => {
-    //           this.deleting = false
-    //           console.log('file database deletion error: ', error)
-    //         })
-    //     })
-    //     .catch((error) => {
-    //       this.deleting = false
-    //       console.log('file deletion error: ', error)
-    //     })
-    // },
     toggleAddFileModal () {
       this.$store.dispatch('toggleAddFileModal')
     },

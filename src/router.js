@@ -17,7 +17,6 @@ const router = new Router({
     { path: '/contact', name: 'contact', component: () => import('./views/Contact.vue'), meta: { title: 'Contact Us' } },
     { path: '/login', name: 'login', component: () => import('./views/Login.vue'), meta: { title: 'Login' } },
     { path: '/logout', name: 'logout', meta: { title: 'Logout' }, beforeEnter (to, from, next) { logout(next) } },
-    { path: '/resetpassword', name: 'resetpassword', component: () => import('./views/Reset.vue'), meta: { title: 'Reset Password' } },
     { path: '/dashboard', name: 'dashboard', component: () => import('./views/Dashboard.vue'), meta: { title: 'Dashboard' }, beforeEnter (to, from, next) { isLoggedin(next) } },
     { path: '/profile/:username', name: 'userprofile', component: () => import('./views/Profile.vue'), meta: { title: 'User Profile' }, beforeEnter (to, from, next) { isAuthorized(to, next) }, props: true },
     { path: '/users', name: 'usermanagement', component: () => import('./views/Users.vue'), meta: { title: 'User Management' }, beforeEnter (to, from, next) { isAuthorized(to, next) } },

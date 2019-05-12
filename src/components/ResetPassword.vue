@@ -56,7 +56,7 @@ export default {
         password: this.password,
         apiKey: process.env.VUE_APP_cloudFunctionsAPIKEY
       }
-      axios.post('http://localhost:5000/nemacolin-website/us-central1/widgets/resetpassword', userData)
+      axios.post('https://us-central1-nemacolin-website.cloudfunctions.net/widgets/resetpassword', userData)
         .then(() => {
           this.toggleResetPasswordModal()
           this.sending = false
